@@ -1,0 +1,69 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model GlobalSettings {
+  id             String @id @default("settings")
+  webhookAuthKey String
+}
+
+model DataStoreApiKey {
+  id     String @id @default(cuid())
+  label  String @unique
+  apiKey String
+  games  Game[]
+}
+
+model Game {
+  id              String          @id @default(cuid())
+  label           String
+  universeId      Int
+  startPlaceId    Int
+  dataStoreApiKey DataStoreApiKey @relation(fields: [apiKeyId], references: [id])
+  apiKeyId        String
+  rules           Rule[]
+  histories History[]
+}
+
+model Rule {
+  id            String @id @default(cuid())
+  game          Game   @relation(fields: [gameId], references: [id])
+  gameId        String
+  label         String
+  datastoreName String
+  datastoreType String
+  keyPattern    String
+  scope         String
+  histories     HistoryRules[]
+}
+
+model History {
+  id        String      @id @default(cuid())
+  userId    String
+  game      Game        @relation(fields: [gameId], references: [id])
+  gameId    String
+  rules     HistoryRules[]
+  errors    ErrorLog[]
+  createdAt DateTime    @default(now())
+}
+
+model HistoryRules {
+  history   History @relation(fields: [historyId], references: [id])
+  historyId String
+  rule      Rule    @relation(fields: [ruleId], references: [id])
+  ruleId    String
+  @@id([historyId, ruleId])
+}
+
+model ErrorLog {
+  id        String   @id @default(cuid())
+  history   History  @relation(fields: [historyId], references: [id])
+  historyId String
+  error     String
+  timestamp DateTime @default(now())
+}
