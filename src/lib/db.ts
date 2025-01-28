@@ -42,12 +42,12 @@ export async function deleteDataStoreApiKey(id: string): Promise<{ success: bool
 
   try {
     await prisma.$transaction(async (tx) => {
-      // 関連ゲームを削除
       await tx.game.deleteMany({
-        where: { dataStoreApiKey: id }
+        where: { 
+          apiKeyId: id
+        }
       });
 
-      // APIキーを削除
       await tx.dataStoreApiKey.delete({
         where: { id }
       });
@@ -55,12 +55,13 @@ export async function deleteDataStoreApiKey(id: string): Promise<{ success: bool
 
     return { success: true };
   } catch (error) {
-    if (error instanceof Error) {
-      throw error;
-    }
+    console.error('DataStore API Key deletion error:', 
+      error instanceof Error ? error.message : 'Unknown error'
+    );
     throw new Error('Failed to delete DataStore API Key');
   }
 }
+
 // Game
 export async function getGames() {
   return prisma.game.findMany({
