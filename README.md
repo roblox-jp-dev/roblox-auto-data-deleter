@@ -8,6 +8,7 @@
 ```shell
 https://github.com/roblox-jp-dev/roblox-data-auto-deleter.git
 cd roblox-data-auto-deleter
+npm install
 npm run build
 npm run start
 ```
