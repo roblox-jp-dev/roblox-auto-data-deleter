@@ -5,4 +5,9 @@
 
 ### インストール
 
-1. `git clone https://github.com/roblox-jp-dev/roblox-data-auto-deleter.git`
+```shell
+https://github.com/roblox-jp-dev/roblox-data-auto-deleter.git
+cd roblox-data-auto-deleter
+npm run build
+npm run start
+```
