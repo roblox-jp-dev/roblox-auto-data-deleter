@@ -92,7 +92,6 @@ export async function POST(request: Request) {
           await createHistory({
             userId,
             gameId: game.id,
-            tableName: processedDatastoreName,
             ruleIds: [rule.id]
           });
 

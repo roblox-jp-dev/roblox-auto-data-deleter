@@ -229,7 +229,6 @@ export async function getHistories(gameId?: string) {
           rule: true
         }
       },
-      errors: true
     },
     orderBy: {
       createdAt: 'desc'
@@ -247,7 +246,6 @@ export async function getHistoryById(id: string) {
           rule: true
         }
       },
-      errors: true
     }
   })
 }
@@ -271,7 +269,6 @@ export async function getHistoriesByUserId(userId: string) {
           rule: true
         }
       },
-      errors: true
     },
     orderBy: {
       createdAt: 'desc'
@@ -283,11 +280,7 @@ export async function getHistoriesByUserId(userId: string) {
 export async function getErrorLogs() {
   return prisma.errorLog.findMany({
     include: {
-      history: {
-        include: {
-          game: true
-        }
-      }
+      game: true
     },
     orderBy: {
       timestamp: 'desc'
@@ -295,11 +288,13 @@ export async function getErrorLogs() {
   })
 }
 
-export async function createErrorLog(historyId: string, error: string) {
+export async function createErrorLog(error: string, gameId: string) {
   return prisma.errorLog.create({
     data: {
-      historyId,
-      error
+      error,
+      game: {
+        connect: { id: gameId }
+      }
     }
   })
 }

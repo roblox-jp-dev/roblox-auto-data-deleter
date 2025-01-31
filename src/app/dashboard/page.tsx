@@ -10,15 +10,45 @@ import RuleTab from "@/components/Setting/RuleTab";
 import HistoryTab from "@/components/History/HistoryTab";
 import ErrorLogTab from "@/components/Error/ErrorLogTab";
 
-type DashboardPageProps = {
-  language: string;
-};
+interface DataStoreApiKey {
+  id: string;
+  label: string;
+  apiKey: string;
+}
 
-export default function DashboardPage({ language }: DashboardPageProps) {
+interface Game {
+  id: string;
+  label: string;
+  universeId: number;
+  startPlaceId: number;
+  dataStoreApiKey: {
+    id: string;
+    label: string;
+  };
+}
+
+interface PageProps {
+  params: Promise<{ [key: string]: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default function Page({ searchParams }: PageProps) {
+  const [language, setLanguage] = useState("ja");
   const [activeTab, setActiveTab] = useState("main");
-  const [apiKeys, setApiKeys] = useState([]);
-  const [games, setGames] = useState([]);
+  const [apiKeys, setApiKeys] = useState<DataStoreApiKey[]>([]);
+  const [games, setGames] = useState<Game[]>([]);
   const router = useRouter();
+
+  useEffect(() => {
+    const initializeLanguage = async () => {
+      const resolvedParams = await searchParams;
+      const lang = Array.isArray(resolvedParams.language)
+        ? resolvedParams.language[0]
+        : resolvedParams.language || "ja";
+      setLanguage(lang);
+    };
+    initializeLanguage();
+  }, [searchParams]);
 
   const fetchApiKeys = async () => {
     try {

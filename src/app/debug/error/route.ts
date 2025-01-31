@@ -3,16 +3,18 @@ import { createErrorLog } from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
-    const { historyId, error } = await req.json();
+    const url = new URL(req.url);
+    const gameId = url.searchParams.get('gameId');
+    const error = url.searchParams.get('error');
 
-    if (!historyId || !error) {
+    if (!gameId || !error) {
       return NextResponse.json(
-        { error: "必要なパラメータが不足しています (historyId, error)" },
+        { error: "必要なパラメータが不足しています (gameId, error)" },
         { status: 400 }
       );
     }
 
-    const log = await createErrorLog(historyId, error);
+    const log = await createErrorLog(error, gameId);
     return NextResponse.json({
       success: true,
       data: log

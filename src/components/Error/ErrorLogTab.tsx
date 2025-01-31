@@ -3,6 +3,7 @@ import { Card, Form, Pagination } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
+import { Game } from "@prisma/client";
 
 interface ErrorLogTabProps {
   language: string;
@@ -10,7 +11,8 @@ interface ErrorLogTabProps {
 
 interface ErrorLog {
   id: string;
-  historyId: string;
+  game: Game;
+  gameId: string;
   error: string;
   timestamp: string;
   history: {
@@ -71,78 +73,77 @@ export default function ErrorLogTab({ language }: ErrorLogTabProps) {
               <Form.Label className="text-sm font-medium text-gray-700 mb-2 block">
                 {language === "en" ? "Date Range" : "期間"}
               </Form.Label>
-              <div className="mt-3 flex gap-6">
+                <div className="mt-3 flex gap-6 mb-6">
                 <div className="relative flex-1">
                   <DatePicker
-                    selected={startDate}
-                    onChange={(date) => setStartDate(date)}
-                    selectsStart
-                    startDate={startDate}
-                    endDate={endDate}
-                    className="w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-gray-900 py-2.5"
-                    placeholderText={language === "en" ? "Start date" : "開始日"}
-                    isClearable
-                    dateFormat="yyyy/MM/dd"
-                    popperPlacement="bottom-start"
-                    popperClassName="z-[100]"
-                    wrapperClassName="w-full"
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  selectsStart
+                  startDate={startDate}
+                  endDate={endDate}
+                  className="w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-gray-900 py-2.5"
+                  placeholderText={language === "en" ? "Start date" : "開始日"}
+                  isClearable
+                  dateFormat="yyyy/MM/dd"
+                  popperPlacement="bottom-start"
+                  popperClassName="z-[100]"
+                  wrapperClassName="w-full"
                   />
                 </div>
                 <div className="relative flex-1">
                   <DatePicker
-                    selected={endDate}
-                    onChange={(date) => setEndDate(date)}
-                    selectsEnd
-                    startDate={startDate}
-                    endDate={endDate}
-                    minDate={startDate ?? undefined}
-                    className="w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-gray-900 py-2.5"
-                    placeholderText={language === "en" ? "End date" : "終了日"}
-                    isClearable
-                    dateFormat="yyyy/MM/dd"
-                    popperPlacement="bottom-start"
-                    popperClassName="z-[100]"
-                    wrapperClassName="w-full"
+                  selected={endDate}
+                  onChange={(date) => setEndDate(date)}
+                  selectsEnd
+                  startDate={startDate}
+                  endDate={endDate}
+                  minDate={startDate ?? undefined}
+                  className="w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-gray-900 py-2.5"
+                  placeholderText={language === "en" ? "End date" : "終了日"}
+                  isClearable
+                  dateFormat="yyyy/MM/dd"
+                  popperPlacement="bottom-start"
+                  popperClassName="z-[100]"
+                  wrapperClassName="w-full"
                   />
                 </div>
-              </div>
-            </div>
           </div>
-
-          <div className="space-y-4">
+            <div className="space-y-4">
             {isLoading ? (
               Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm animate-pulse">
-                  <div className="space-y-3">
-                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  </div>
+              <div key={index} className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm animate-pulse">
+                <div className="space-y-3">
+                <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                 </div>
+              </div>
               ))
             ) : (
-              paginatedLogs.map((log) => (
+              <>
+              {paginatedLogs.map((log) => (
                 <div key={log.id} className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="space-y-1">
-                      <div className="text-sm text-gray-600">
-                        {new Date(log.timestamp).toLocaleString()}
-                      </div>
-                    </div>
+                <div className="flex justify-between items-start mb-4">
+                  <div className="space-y-1">
+                  <div className="text-sm text-gray-900">
+                    {new Date(log.timestamp).toLocaleString()}
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="font-medium text-gray-700 mb-2">
-                      {language === "en" ? "Game: " : "ゲーム: "}
-                      {log.history.game.label}
-                    </div>
-                    <div className="text-sm text-gray-600 whitespace-pre-wrap break-all">
-                      {log.error}
-                    </div>
                   </div>
                 </div>
-              ))
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="font-medium text-gray-900 mb-2">
+                  {language === "en" ? "Game: " : "ゲーム: "}
+                  {log.game?.label || (language === "en" ? "Unknown Game" : "不明なゲーム")}                  
+                  </div>
+                  <div className="text-sm text-gray-900 whitespace-pre-wrap break-all">
+                  {log.error}
+                  </div>
+                </div>
+                </div>
+              ))}
+              </>
             )}
-          </div>
+            </div>
 
           {totalPages > 1 && (
             <div className="mt-6 flex justify-center">
@@ -163,6 +164,8 @@ export default function ErrorLogTab({ language }: ErrorLogTabProps) {
               </Pagination>
             </div>
           )}
+            </div>
+          </div>
         </Card.Body>
       </Card>
     </div>

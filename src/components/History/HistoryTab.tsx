@@ -20,6 +20,7 @@ interface History {
   rules: {
     rule: {
       label: string;
+      keyPattern: string;
     };
   }[];
 }
