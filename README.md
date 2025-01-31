@@ -6,7 +6,7 @@
 ### インストール
 
 ```shell
-https://github.com/roblox-jp-dev/roblox-data-auto-deleter.git
+git clone https://github.com/roblox-jp-dev/roblox-data-auto-deleter.git
 cd roblox-data-auto-deleter
 npm install
 npm run build
