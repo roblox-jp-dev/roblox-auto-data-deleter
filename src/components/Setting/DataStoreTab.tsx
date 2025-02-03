@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Card, Button, Modal } from "react-bootstrap";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 interface DataStoreKeyCardProps {
   language: string;
@@ -33,6 +34,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
         setShowModal(false);
         setFormData({ label: "", apiKey: "" });
         onUpdate();
+        toast.success(language === "en" ? "API key added" : "APIキーを追加しました");
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
@@ -52,6 +54,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
       await axios.delete(`/api/setting/datastore?id=${selectedKey}`);
       setShowDeleteModal(false);
       onUpdate();
+      toast.success(language === "en" ? "API key deleted" : "APIキーを削除しました");
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         alert(error.response.data.error);
@@ -130,8 +133,11 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
         centered
       >
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onClick={() => setShowModal(false)}></div>
-          <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
+            onClick={() => setShowModal(false)}
+          ></div>
+          <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-xl font-bold text-gray-900">
                 {language === "en" ? "Add API Key" : "APIキーを追加"}
@@ -140,6 +146,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
             <div className="p-6 space-y-4">
               <div className="relative">
                 <input
+                  autoFocus
                   type="text"
                   value={formData.label}
                   onChange={(e) => setFormData({ ...formData, label: e.target.value })}
@@ -191,15 +198,18 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
           </div>
         </div>
       </Modal>
-
+      
       <Modal
         show={showDeleteModal}
         onHide={() => setShowDeleteModal(false)}
         centered
       >
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)}></div>
-          <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
+            onClick={() => setShowDeleteModal(false)}
+          ></div>
+          <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in">
             <div className="px-6 py-4">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 {language === "en" ? "Delete API Key" : "APIキーを削除"}

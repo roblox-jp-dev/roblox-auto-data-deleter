@@ -45,22 +45,31 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const { id } = await request.json();
-    
-    if (!id || typeof id !== "string") {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id");
+
+    if (!id) {
       return NextResponse.json(
-        { error: "有効なIDを指定してください" },
+        { error: "IDが指定されていません" },
         { status: 400 }
       );
     }
 
-    await deleteGame(id);
-    return NextResponse.json({ message: "ゲームを削除しました" });
-  } catch (err: unknown) {
-    const error = err as Error;
-    console.error("Game deletion error:", error.message);
+    const result = await deleteGame(id);
+
+    if (result.error) {
+      return NextResponse.json(
+        { error: result.error },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "エラーが発生しました";
     return NextResponse.json(
-      { error: "ゲームの削除に失敗しました" },
+      { error: message },
       { status: 500 }
     );
   }

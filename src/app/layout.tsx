@@ -2,8 +2,8 @@
 
 import React from "react";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Toaster } from "sonner";
 import "./globals.css";
+import ToastProvider from '@/components/layouts/ToastProvider'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-white`}>
+        <ToastProvider>
         <header className="bg-white shadow-sm">
           <div className="max-w-7xl mx-auto py-3 sm:py-4 px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-2 sm:gap-3">
@@ -46,7 +47,7 @@ export default function RootLayout({
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {children}
         </main>
-        <Toaster />
+        </ToastProvider>
       </body>
     </html>
   );

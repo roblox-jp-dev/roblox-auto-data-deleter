@@ -66,10 +66,16 @@ export async function DELETE(request: Request) {
     }
 
     const result = await deleteDataStoreApiKey(id);
-    return NextResponse.json(result);
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error },
+        { status: 500 }
+      );
+    }
 
+    return NextResponse.json(result);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "APIキーの削除に失敗しました";
+    const message = error instanceof Error ? error.message : "エラーが発生しました";
     return NextResponse.json(
       { error: message },
       { status: 500 }

@@ -2,6 +2,7 @@
 import { signIn } from 'next-auth/react';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 export default function LoginPage() {
   const [password, setPassword] = useState('');
@@ -25,6 +26,7 @@ export default function LoginPage() {
       } else {
         router.push('/dashboard');
         router.refresh();
+        toast.success('ログインしました');
       }
     } catch (error: unknown) {
       console.error('Login error:', error);

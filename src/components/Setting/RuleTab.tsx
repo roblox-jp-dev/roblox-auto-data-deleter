@@ -5,6 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import axios from "axios";
+import { toast } from "react-toastify";
 
 interface Rule {
   id: string;
@@ -85,6 +86,7 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
             });
             await fetchRules();
             onUpdate();
+            toast.success(language === "en" ? "Rule added" : "ルールを追加しました");
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response) {
                 alert(error.response.data.error);
@@ -106,6 +108,7 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
             setShowDeleteModal(false);
             await fetchRules();
             onUpdate();
+            toast.success(language === "en" ? "Rule deleted" : "ルールを削除しました");
         } catch (error) {
             console.error(error);
             alert(language === "en" ? "Failed to delete rule" : "ルールの削除に失敗しました");
@@ -209,8 +212,11 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
 
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onClick={() => setShowModal(false)}></div>
-          <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
+            onClick={() => setShowModal(false)}>
+          </div>
+          <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-xl font-bold text-gray-900">
                 {language === "en" ? "Add Rule" : "ルールを追加"}
@@ -219,6 +225,7 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
             <div className="p-6 space-y-4">
               <div className="relative">
                 <select
+                  autoFocus
                   value={formData.gameId}
                   onChange={(e) => setFormData({ ...formData, gameId: e.target.value })}
                   className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
@@ -352,13 +359,12 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
         </div>
       </Modal>
 
-      <Modal
-        show={showDeleteModal}
-        onHide={() => setShowDeleteModal(false)}
-        centered
-      >
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)}></div>
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
+            onClick={() => setShowDeleteModal(false)}>
+          </div>
           <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in">
             <div className="px-6 py-4">
               <h3 className="text-xl font-bold text-gray-900 mb-4">

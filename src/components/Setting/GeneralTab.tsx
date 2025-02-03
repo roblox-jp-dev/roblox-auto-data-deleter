@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, Button, Modal } from "react-bootstrap";
 import { Key } from "lucide-react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 interface SettingTabProps {
   language: string;
@@ -40,6 +41,7 @@ export function GeneralTab({ language }: SettingTabProps) {
       await fetchWebhookAuthKey();
       setShowModal(false);
       setAuthKey("");
+      toast.success(language === "en" ? "Webhook auth key set" : "Webhook認証キーを設定しました");
     } catch (error: unknown) {
       console.error('Error setting webhook key:', error);
       alert(language === "en" ? "Failed to set webhook key" : "Webhook認証キーの設定に失敗しました");
@@ -110,8 +112,11 @@ export function GeneralTab({ language }: SettingTabProps) {
         centered
       >
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onClick={handleClose}></div>
-          <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
+            onClick={handleClose}
+          ></div>
+          <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-xl font-bold text-gray-900">
                 {language === "en" ? "Set Webhook Auth Key" : "Webhook認証キーを設定"}
@@ -120,6 +125,7 @@ export function GeneralTab({ language }: SettingTabProps) {
             <div className="p-6">
               <div className="relative">
                 <input
+                  autoFocus
                   type="text"
                   value={authKey}
                   onChange={(e) => setAuthKey(e.target.value)}

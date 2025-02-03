@@ -35,27 +35,30 @@ export async function createDataStoreApiKey(data: {
   return prisma.dataStoreApiKey.create({ data })
 }
 
-export async function deleteDataStoreApiKey(id: string): Promise<{ success: boolean }> {
+export async function deleteDataStoreApiKey(id: string): Promise<{ success: boolean; error: string | null }> {
   if (!id) {
     throw new Error('ID is required');
   }
 
   try {
-    await prisma.$transaction(async (tx) => {
-      await tx.game.deleteMany({
-        where: { 
-          apiKeyId: id
-        }
+    const transactionResult = await prisma.$transaction(async (tx) => {
+      const gameCount = await tx.game.count({
+        where: { apiKeyId: id }
       });
+
+      if (gameCount > 0) {
+        return { success: false, error: 'APIキーを使用しているゲームが存在するため削除できません' };
+      }
 
       await tx.dataStoreApiKey.delete({
         where: { id }
       });
+      return { success: true, error: null };
     });
 
-    return { success: true };
+    return transactionResult;
   } catch (error) {
-    console.error('DataStore API Key deletion error:', 
+    console.error('DataStore API Key deletion error:',
       error instanceof Error ? error.message : 'Unknown error'
     );
     throw new Error('Failed to delete DataStore API Key');
@@ -81,30 +84,29 @@ export async function createGame(data: {
   return prisma.game.create({ data })
 }
 
-export async function deleteGame(id: string) {
-  return await prisma.$transaction(async (tx) => {
-    const rules = await tx.rule.findMany({
-      where: { gameId: id }
-    });
+export async function deleteGame(id: string): Promise<{ success: boolean; error: string | null }> {
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const rules = await tx.rule.findMany({
+        where: { gameId: id }
+      });
 
-    const ruleIds = rules.map(rule => rule.id);
-
-    await tx.historyRules.deleteMany({
-      where: {
-        ruleId: {
-          in: ruleIds
-        }
+      if (rules.length > 0) {
+        return { success: false, error: "ゲームに関連するルールが存在するため削除できません" };
       }
+
+      await tx.game.delete({
+        where: { id }
+      });
+
+      return { success: true, error: null };
     });
 
-    await tx.rule.deleteMany({
-      where: { gameId: id }
-    });
-
-    return tx.game.delete({
-      where: { id }
-    });
-  });
+    return result;
+  } catch (error) {
+    console.error("Game deletion error:", error instanceof Error ? error.message : error);
+    return { success: false, error: "ゲームの削除に失敗しました" };
+  }
 }
 
 // Rule
