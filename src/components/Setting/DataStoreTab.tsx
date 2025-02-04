@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { FiPlus, FiTrash2, FiEye, FiEyeOff } from "react-icons/fi";
 import { Card, Button, Modal } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -21,6 +21,8 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
   const [formData, setFormData] = useState({ label: "", apiKey: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [showApiKey, setShowApiKey] = useState(false); // For modal input
+  const [visibleApiKeys, setVisibleApiKeys] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     setIsInitialLoading(false);
@@ -80,7 +82,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
             className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg transition-colors duration-200 border-0 mb-6 flex items-center"
             disabled={isInitialLoading}
           >
-            <Plus className="mr-2 h-4 w-4" />
+            <FiPlus className="mr-2 h-4 w-4" />
             {language === "en" ? "Add API Key" : "APIキーを追加"}
           </Button>
 
@@ -101,9 +103,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
               apiKeys.map((key) => (
                 <div key={key.id} className="bg-gray-50 rounded-lg p-5 border border-gray-100">
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-lg font-bold text-blue-700">
-                      {key.label}
-                    </h3>
+                    <h3 className="text-lg font-bold text-blue-700">{key.label}</h3>
                     <button
                       onClick={() => {
                         setSelectedKey(key.id);
@@ -111,14 +111,29 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
                       }}
                       className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <FiTrash2 className="h-4 w-4" />
                     </button>
                   </div>
-                  <div className="text-gray-700">
-                    <span className="font-medium">API Key:</span>{" "}
-                    <span className="font-mono bg-gray-100 px-2 py-1 rounded">
-                      {key.apiKey}
+                  <div className="text-gray-700 flex items-center">
+                    <span className="font-medium">API Key:</span>
+                    <span className="font-mono bg-gray-100 px-2 py-1 rounded ml-2">
+                      {visibleApiKeys[key.id] ? key.apiKey : "••••••••"}
                     </span>
+                    <button
+                      onClick={() =>
+                        setVisibleApiKeys((prev) => ({
+                          ...prev,
+                          [key.id]: !prev[key.id],
+                        }))
+                      }
+                      className="ml-2"
+                    >
+                      {visibleApiKeys[key.id] ? (
+                        <FiEyeOff className="h-4 w-4 text-gray-500" />
+                      ) : (
+                        <FiEye className="h-4 w-4 text-gray-500" />
+                      )}
+                    </button>
                   </div>
                 </div>
               ))
@@ -127,17 +142,16 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
         </Card.Body>
       </Card>
 
-      <Modal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        centered
-      >
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div
             className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
             onClick={() => setShowModal(false)}
           ></div>
-          <div onClick={(e) => e.stopPropagation()} className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in"
+          >
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-xl font-bold text-gray-900">
                 {language === "en" ? "Add API Key" : "APIキーを追加"}
@@ -161,23 +175,33 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
                   {language === "en" ? "Label" : "ラベル"}
                 </label>
               </div>
-                <div className="relative">
-                  <input
-                  type="password"
+              <div className="relative">
+                <input
+                  type={showApiKey ? "text" : "password"}
                   autoComplete="new-password"
                   value={formData.apiKey}
                   onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
                   className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
                   placeholder=" "
                   id="apikey-input"
-                  />
-                  <label
+                />
+                <label
                   htmlFor="apikey-input"
                   className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
-                  >
+                >
                   {language === "en" ? "API Key" : "APIキー"}
-                  </label>
+                </label>
+                <div
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                  onClick={() => setShowApiKey(!showApiKey)}
+                >
+                  {showApiKey ? (
+                    <FiEyeOff className="h-5 w-5 text-gray-500" />
+                  ) : (
+                    <FiEye className="h-5 w-5 text-gray-500" />
+                  )}
                 </div>
+              </div>
             </div>
             <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
               <button
@@ -191,7 +215,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
                 disabled={isLoading}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
               >
-                {isLoading 
+                {isLoading
                   ? (language === "en" ? "Adding..." : "追加中...")
                   : (language === "en" ? "Add" : "追加")}
               </button>
@@ -199,12 +223,8 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
           </div>
         </div>
       </Modal>
-      
-      <Modal
-        show={showDeleteModal}
-        onHide={() => setShowDeleteModal(false)}
-        centered
-      >
+
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div
             className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
@@ -216,8 +236,8 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
                 {language === "en" ? "Delete API Key" : "APIキーを削除"}
               </h3>
               <p className="text-gray-600">
-                {language === "en" 
-                  ? "Are you sure you want to delete this API key?\nIf you delete it, the game and rules using it will also be deleted\nThis operation cannot be undone" 
+                {language === "en"
+                  ? "Are you sure you want to delete this API key?\nIf you delete it, the game and rules using it will also be deleted\nThis operation cannot be undone"
                   : "このAPIキーを削除してもよろしいですか？\nもし削除した場合は、それを使用しているゲーム、ルールも同時に削除されます。\nこの操作は取り消せません"}
               </p>
             </div>
@@ -233,7 +253,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
                 disabled={isLoading}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
               >
-                {isLoading 
+                {isLoading
                   ? (language === "en" ? "Deleting..." : "削除中...")
                   : (language === "en" ? "Delete" : "削除")}
               </button>
