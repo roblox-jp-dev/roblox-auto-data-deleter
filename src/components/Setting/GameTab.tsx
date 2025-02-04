@@ -288,7 +288,7 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
           <p className="text-gray-600">
             {language === "en" 
           ? "Are you sure you want to delete this game?\nIf you delete this game, the rules that use this game will also be deleted\nThis operation cannot be undone" 
-          : "このゲームを削除してもよろしいですか？\nこの操作は取り消せません"}
+          : "このゲームを削除してもよろしいですか？"}
           </p>
         </div>
         <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
