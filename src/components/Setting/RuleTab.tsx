@@ -211,7 +211,15 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
       </Card>
 
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-          <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
+            onClick={() => setShowModal(false)}
+          ></div>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in"
+          >
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-xl font-bold text-gray-900">
                 {language === "en" ? "Add Rule" : "ルールを追加"}
@@ -222,13 +230,19 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                 <select
                   autoFocus
                   value={formData.gameId}
-                  onChange={(e) => setFormData({ ...formData, gameId: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, gameId: e.target.value })
+                  }
                   className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
                   id="game-select"
                 >
-                  <option value="">{language === "en" ? "Select Game" : "ゲームを選択"}</option>
+                  <option value="">
+                    {language === "en" ? "Select Game" : "ゲームを選択"}
+                  </option>
                   {games.map((game) => (
-                    <option key={game.id} value={game.id}>{game.label}</option>
+                    <option key={game.id} value={game.id}>
+                      {game.label}
+                    </option>
                   ))}
                 </select>
                 <label
@@ -238,12 +252,14 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                   {language === "en" ? "Game" : "ゲーム"}
                 </label>
               </div>
-
+      
               <div className="relative">
                 <input
                   type="text"
                   value={formData.label}
-                  onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, label: e.target.value })
+                  }
                   className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
                   placeholder=" "
                   id="label-input"
@@ -255,12 +271,14 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                   {language === "en" ? "Label" : "ラベル"}
                 </label>
               </div>
-
+      
               <div className="relative">
                 <input
                   type="text"
                   value={formData.datastoreName}
-                  onChange={(e) => setFormData({ ...formData, datastoreName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, datastoreName: e.target.value })
+                  }
                   className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
                   placeholder=" "
                   id="datastore-name-input"
@@ -272,16 +290,22 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                   {language === "en" ? "Datastore Name" : "データストア名"}
                 </label>
               </div>
-
+      
               <div className="relative">
                 <select
                   value={formData.datastoreType}
-                  onChange={(e) => setFormData({ ...formData, datastoreType: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, datastoreType: e.target.value })
+                  }
                   className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
                   id="datastore-type-select"
                 >
-                  <option value="standard">{language === "en" ? "Standard" : "通常データストア"}</option>
-                  <option value="ordered">{language === "en" ? "Ordered" : "並び替え済みデータストア"}</option>
+                  <option value="standard">
+                    {language === "en" ? "Standard" : "通常データストア"}
+                  </option>
+                  <option value="ordered">
+                    {language === "en" ? "Ordered" : "並び替え済みデータストア"}
+                  </option>
                 </select>
                 <label
                   htmlFor="datastore-type-select"
@@ -290,19 +314,23 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                   {language === "en" ? "Type" : "タイプ"}
                 </label>
               </div>
-
+      
               <div className="relative">
                 <Tippy
-                  content={language === "en"
-                    ? "Replace the player ID in the key with {playerId}"
-                    : "キーにあるプレイヤーIDの部分を{playerId}に置き変えてください"
+                  content={
+                    language === "en"
+                      ? "Replace the player ID in the key with {playerId}"
+                      : "キーにあるプレイヤーIDの部分を{playerId}に置き変えてください"
                   }
                   placement="top"
-                  trigger="mouseenter focus">
+                  trigger="mouseenter focus"
+                >
                   <input
                     type="text"
                     value={formData.keyPattern}
-                    onChange={(e) => setFormData({ ...formData, keyPattern: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, keyPattern: e.target.value })
+                    }
                     className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
                     placeholder=" "
                     id="key-pattern-input"
@@ -315,12 +343,14 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                   {language === "en" ? "Key Pattern" : "キーパターン"}
                 </label>
               </div>
-
+      
               <div className="relative">
                 <input
                   type="text"
                   value={formData.scope}
-                  onChange={(e) => setFormData({ ...formData, scope: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, scope: e.target.value })
+                  }
                   className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
                   placeholder=" "
                   id="scope-input"
@@ -345,28 +375,36 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                 disabled={isLoading}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
               >
-                {isLoading 
-                  ? (language === "en" ? "Adding..." : "追加中...")
-                  : (language === "en" ? "Add" : "追加")}
+                {isLoading
+                  ? language === "en"
+                    ? "Adding..."
+                    : "追加中..."
+                  : language === "en"
+                  ? "Add"
+                  : "追加"}
               </button>
             </div>
           </div>
+        </div>
       </Modal>
-
+      
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div
             className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
-            onClick={() => setShowDeleteModal(false)}>
-          </div>
-          <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in">
+            onClick={() => setShowDeleteModal(false)}
+          ></div>
+          <div
+            className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="px-6 py-4">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 {language === "en" ? "Delete Rule" : "ルールを削除"}
               </h3>
               <p className="text-gray-600">
-                {language === "en" 
-                  ? "Are you sure you want to delete this rule?" 
+                {language === "en"
+                  ? "Are you sure you want to delete this rule?"
                   : "このルールを削除してもよろしいですか？"}
               </p>
             </div>
@@ -382,9 +420,13 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                 disabled={isLoading}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
               >
-                {isLoading 
-                  ? (language === "en" ? "Deleting..." : "削除中...")
-                  : (language === "en" ? "Delete" : "削除")}
+                {isLoading
+                  ? language === "en"
+                    ? "Deleting..."
+                    : "削除中..."
+                  : language === "en"
+                  ? "Delete"
+                  : "削除"}
               </button>
             </div>
           </div>

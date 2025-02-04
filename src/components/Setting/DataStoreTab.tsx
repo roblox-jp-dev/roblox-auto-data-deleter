@@ -238,7 +238,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
               <p className="text-gray-600">
                 {language === "en"
                   ? "Are you sure you want to delete this API key?\nIf you delete it, the game and rules using it will also be deleted\nThis operation cannot be undone"
-                  : "このAPIキーを削除してもよろしいですか？\nもし削除した場合は、それを使用しているゲーム、ルールも同時に削除されます。\nこの操作は取り消せません"}
+                  : "このAPIキーを削除してもよろしいですか？"}
               </p>
             </div>
             <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
