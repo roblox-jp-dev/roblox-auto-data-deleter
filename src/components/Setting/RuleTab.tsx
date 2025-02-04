@@ -211,11 +211,6 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
       </Card>
 
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
-            onClick={() => setShowModal(false)}>
-          </div>
           <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-xl font-bold text-gray-900">
@@ -356,7 +351,6 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
               </button>
             </div>
           </div>
-        </div>
       </Modal>
 
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>

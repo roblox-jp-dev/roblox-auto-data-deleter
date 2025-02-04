@@ -137,7 +137,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
             className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
             onClick={() => setShowModal(false)}
           ></div>
-          <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-xl font-bold text-gray-900">
                 {language === "en" ? "Add API Key" : "APIキーを追加"}
@@ -161,22 +161,23 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
                   {language === "en" ? "Label" : "ラベル"}
                 </label>
               </div>
-              <div className="relative">
-                <input
-                  type="text"
+                <div className="relative">
+                  <input
+                  type="password"
+                  autoComplete="new-password"
                   value={formData.apiKey}
                   onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
                   className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
                   placeholder=" "
                   id="apikey-input"
-                />
-                <label
+                  />
+                  <label
                   htmlFor="apikey-input"
                   className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
-                >
+                  >
                   {language === "en" ? "API Key" : "APIキー"}
-                </label>
-              </div>
+                  </label>
+                </div>
             </div>
             <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
               <button

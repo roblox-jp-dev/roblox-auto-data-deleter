@@ -160,106 +160,109 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
       >
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
-            onClick={() => setShowModal(false)}
+        className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
+        onClick={() => setShowModal(false)}
           ></div>
-          <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900">
-                {language === "en" ? "Add Game" : "ゲームを追加"}
-              </h3>
-            </div>
-            <div className="p-6 space-y-4">
-              <div className="relative">
-                <input
-                  autoFocus
-                  type="text"
-                  value={formData.label}
-                  onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                  className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
-                  placeholder=" "
-                  id="label-input"
-                />
-                <label
-                  htmlFor="label-input"
-                  className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
-                >
-                  {language === "en" ? "Label" : "ラベル"}
-                </label>
-              </div>
-              <div className="relative">
-                <input
-                  type="number"
-                  value={formData.universeId}
-                  onChange={(e) => setFormData({ ...formData, universeId: e.target.value })}
-                  className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
-                  placeholder=" "
-                  id="universe-id-input"
-                />
-                <label
-                  htmlFor="universe-id-input"
-                  className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
-                >
-                  {language === "en" ? "Universe ID" : "ユニバースID"}
-                </label>
-              </div>
-              <div className="relative">
-                <input
-                  type="number"
-                  value={formData.startPlaceId}
-                  onChange={(e) => setFormData({ ...formData, startPlaceId: e.target.value })}
-                  className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
-                  placeholder=" "
-                  id="start-place-id-input"
-                />
-                <label
-                  htmlFor="start-place-id-input"
-                  className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
-                >
-                  {language === "en" ? "Start Place ID" : "開始プレースID"}
-                </label>
-              </div>
-              <div className="relative">
-                <select
-                  value={formData.apiKeyId}
-                  onChange={(e) => setFormData({ ...formData, apiKeyId: e.target.value })}
-                  className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
-                  id="api-key-input"
-                >
-                  <option value="">
-                    {language === "en" ? "Select API Key" : "APIキーを選択"}
-                  </option>
-                  {apiKeys.map((key) => (
-                    <option key={key.id} value={key.id}>
-                      {key.label}
-                    </option>
-                  ))}
-                </select>
-                <label
-                  htmlFor="api-key-input"
-                  className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
-                >
-                  {language === "en" ? "API Key" : "APIキー"}
-                </label>
-              </div>
-            </div>
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
-              >
-                {language === "en" ? "Cancel" : "キャンセル"}
-              </button>
-              <button
-                onClick={handleAdd}
-                disabled={isLoading}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-              >
-                {isLoading 
-                  ? (language === "en" ? "Adding..." : "追加中...")
-                  : (language === "en" ? "Add" : "追加")}
-              </button>
-            </div>
+          <div
+        className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in"
+        onClick={(e) => e.stopPropagation()}
+          >
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-xl font-bold text-gray-900">
+            {language === "en" ? "Add Game" : "ゲームを追加"}
+          </h3>
+        </div>
+        <div className="p-6 space-y-4">
+          <div className="relative">
+            <input
+          autoFocus
+          type="text"
+          value={formData.label}
+          onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+          className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
+          placeholder=" "
+          id="label-input"
+            />
+            <label
+          htmlFor="label-input"
+          className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
+            >
+          {language === "en" ? "Label" : "ラベル"}
+            </label>
+          </div>
+          <div className="relative">
+            <input
+          type="number"
+          value={formData.universeId}
+          onChange={(e) => setFormData({ ...formData, universeId: e.target.value })}
+          className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
+          placeholder=" "
+          id="universe-id-input"
+            />
+            <label
+          htmlFor="universe-id-input"
+          className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
+            >
+          {language === "en" ? "Universe ID" : "ユニバースID"}
+            </label>
+          </div>
+          <div className="relative">
+            <input
+          type="number"
+          value={formData.startPlaceId}
+          onChange={(e) => setFormData({ ...formData, startPlaceId: e.target.value })}
+          className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
+          placeholder=" "
+          id="start-place-id-input"
+            />
+            <label
+          htmlFor="start-place-id-input"
+          className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
+            >
+          {language === "en" ? "Start Place ID" : "開始プレースID"}
+            </label>
+          </div>
+          <div className="relative">
+            <select
+          value={formData.apiKeyId}
+          onChange={(e) => setFormData({ ...formData, apiKeyId: e.target.value })}
+          className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
+          id="api-key-input"
+            >
+          <option value="">
+            {language === "en" ? "Select API Key" : "APIキーを選択"}
+          </option>
+          {apiKeys.map((key) => (
+            <option key={key.id} value={key.id}>
+              {key.label}
+            </option>
+          ))}
+            </select>
+            <label
+          htmlFor="api-key-input"
+          className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
+            >
+          {language === "en" ? "API Key" : "APIキー"}
+            </label>
+          </div>
+        </div>
+        <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+          <button
+            onClick={() => setShowModal(false)}
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
+          >
+            {language === "en" ? "Cancel" : "キャンセル"}
+          </button>
+          <button
+            onClick={handleAdd}
+            disabled={isLoading}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+          >
+            {isLoading 
+          ? (language === "en" ? "Adding..." : "追加中...")
+          : (language === "en" ? "Add" : "追加")}
+          </button>
+        </div>
           </div>
         </div>
       </Modal>
@@ -271,37 +274,40 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
       >
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
-            onClick={() => setShowDeleteModal(false)}
+        className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
+        onClick={() => setShowDeleteModal(false)}
           ></div>
-          <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in">
-            <div className="px-6 py-4">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
-                {language === "en" ? "Delete Game" : "ゲームを削除"}
-              </h3>
-              <p className="text-gray-600">
-                {language === "en" 
-                  ? "Are you sure you want to delete this game?\nIf you delete this game, the rules that use this game will also be deleted\nThis operation cannot be undone" 
-                  : "このゲームを削除してもよろしいですか？\nもし削除した場合、このゲームを使用したルールは削除されます。\nこの操作は取り消せません"}
-              </p>
-            </div>
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
-              >
-                {language === "en" ? "Cancel" : "キャンセル"}
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={isLoading}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
-              >
-                {isLoading 
-                  ? (language === "en" ? "Deleting..." : "削除中...")
-                  : (language === "en" ? "Delete" : "削除")}
-              </button>
-            </div>
+          <div
+        className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in"
+        onClick={(e) => e.stopPropagation()}
+          >
+        <div className="px-6 py-4">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">
+            {language === "en" ? "Delete Game" : "ゲームを削除"}
+          </h3>
+          <p className="text-gray-600">
+            {language === "en" 
+          ? "Are you sure you want to delete this game?\nIf you delete this game, the rules that use this game will also be deleted\nThis operation cannot be undone" 
+          : "このゲームを削除してもよろしいですか？\nこの操作は取り消せません"}
+          </p>
+        </div>
+        <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+          <button
+            onClick={() => setShowDeleteModal(false)}
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
+          >
+            {language === "en" ? "Cancel" : "キャンセル"}
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={isLoading}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
+          >
+            {isLoading 
+          ? (language === "en" ? "Deleting..." : "削除中...")
+          : (language === "en" ? "Delete" : "削除")}
+          </button>
+        </div>
           </div>
         </div>
       </Modal>

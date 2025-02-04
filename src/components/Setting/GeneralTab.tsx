@@ -111,55 +111,47 @@ export function GeneralTab({ language }: SettingTabProps) {
         onHide={handleClose}
         centered
       >
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
-            onClick={handleClose}
-          ></div>
-          <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900">
-                {language === "en" ? "Set Webhook Auth Key" : "Webhook認証キーを設定"}
-              </h3>
-            </div>
-            <div className="p-6">
-              <div className="relative">
-                <input
-                  autoFocus
-                  type="text"
-                  value={authKey}
-                  onChange={(e) => setAuthKey(e.target.value)}
-                  className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
-                  placeholder=" "
-                  id="auth-key-input"
-                />
-                <label
-                  htmlFor="auth-key-input"
-                  className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
-                >
-                  {language === "en" ? "Auth key" : "認証キー"}
-                </label>
-              </div>
-            </div>
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
-              <button
-                onClick={handleClose}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
-              >
-                {language === "en" ? "Cancel" : "キャンセル"}
-              </button>
-              <button
-                onClick={handleSetWebhookKey}
-                disabled={isLoading}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-              >
-                {isLoading 
-                  ? (language === "en" ? "Setting..." : "設定中...")
-                  : (language === "en" ? "Set" : "設定")}
-              </button>
-            </div>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {language === "en" ? "Set Webhook Auth Key" : "Webhook認証キーを設定"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="relative">
+            <input
+              autoFocus
+              type="text"
+              value={authKey}
+              onChange={(e) => setAuthKey(e.target.value)}
+              className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
+              placeholder=" "
+              id="auth-key-input"
+            />
+            <label
+              htmlFor="auth-key-input"
+              className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
+            >
+              {language === "en" ? "Auth key" : "認証キー"}
+            </label>
           </div>
-        </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            onClick={handleClose}
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
+          >
+            {language === "en" ? "Cancel" : "キャンセル"}
+          </button>
+          <button
+            onClick={handleSetWebhookKey}
+            disabled={isLoading}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+          >
+            {isLoading 
+              ? (language === "en" ? "Setting..." : "設定中...")
+              : (language === "en" ? "Set" : "設定")}
+          </button>
+        </Modal.Footer>
       </Modal>
     </>
   );
