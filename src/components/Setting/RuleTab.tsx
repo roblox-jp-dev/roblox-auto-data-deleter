@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Card, Button } from "react-bootstrap";
-import Modal from 'react-bootstrap/Modal';
-import Tippy from '@tippyjs/react';
-import 'tippy.js/dist/tippy.css';
+import Modal from "react-bootstrap/Modal";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -22,17 +22,16 @@ interface Rule {
 
 interface RuleTabProps {
   language: string;
+  rules: Rule[];
+  games: Array<{ id: string; label: string }>;
   onUpdate: () => void;
 }
 
-export default function RuleTab({ language, onUpdate }: RuleTabProps) {
-  const [rules, setRules] = useState<Rule[]>([]);
-  const [games, setGames] = useState<Array<{ id: string; label: string }>>([]);
+export default function RuleTab({ language, rules, games, onUpdate }: RuleTabProps) {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedRule, setSelectedRule] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [formData, setFormData] = useState({
     gameId: "",
     label: "",
@@ -42,80 +41,47 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
     scope: ""
   });
 
-    const fetchRules = async () => {
-        try {
-            const response = await axios.get("/api/setting/rule");
-            setRules(response.data);
-        } catch (error) {
-            console.error("ルール一覧の取得に失敗しました:", error);
-            setRules([]);
-        }
-    };
-
-  const fetchGames = async () => {
+  const handleAdd = async () => {
+    setIsLoading(true);
     try {
-      const response = await axios.get("/api/setting/game");
-      setGames(response.data);
-    } catch (error) {
-      console.error("ゲーム一覧の取得に失敗しました:", error);
-      setGames([]);
+      await axios.post("/api/setting/rule", formData);
+      setShowModal(false);
+      setFormData({
+        gameId: "",
+        label: "",
+        datastoreName: "",
+        datastoreType: "standard",
+        keyPattern: "",
+        scope: ""
+      });
+      onUpdate();
+      toast.success(language === "en" ? "Rule added" : "ルールを追加しました");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        alert(error.response.data.error);
+      } else {
+        alert(language === "en" ? "Failed to add rule" : "ルールの追加に失敗しました");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    const initialize = async () => {
-      await fetchGames();
-      await fetchRules();
-      setIsInitialLoading(false);
-    };
-    initialize();
-  }, []);
-
-    const handleAdd = async () => {
-        setIsLoading(true);
-        try {
-            await axios.post("/api/setting/rule", formData);
-            setShowModal(false);
-            setFormData({
-                gameId: "",
-                label: "",
-                datastoreName: "",
-                datastoreType: "standard",
-                keyPattern: "",
-                scope: ""
-            });
-            await fetchRules();
-            onUpdate();
-            toast.success(language === "en" ? "Rule added" : "ルールを追加しました");
-        } catch (error: unknown) {
-            if (axios.isAxiosError(error) && error.response) {
-                alert(error.response.data.error);
-            } else {
-                alert(language === "en" ? "Failed to add rule" : "ルールの追加に失敗しました");
-            }
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleDelete = async () => {
-        if (!selectedRule) return;
-        setIsLoading(true);
-        try {
-            await axios.delete("/api/setting/rule", {
-                data: { id: selectedRule }
-            });
-            setShowDeleteModal(false);
-            await fetchRules();
-            onUpdate();
-            toast.success(language === "en" ? "Rule deleted" : "ルールを削除しました");
-        } catch (error) {
-            console.error(error);
-            alert(language === "en" ? "Failed to delete rule" : "ルールの削除に失敗しました");
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  const handleDelete = async () => {
+    if (!selectedRule) return;
+    setIsLoading(true);
+    try {
+      await axios.delete("/api/setting/rule", { data: { id: selectedRule } });
+      setShowDeleteModal(false);
+      onUpdate();
+      toast.success(language === "en" ? "Rule deleted" : "ルールを削除しました");
+    } catch (error) {
+      console.error(error);
+      alert(language === "en" ? "Failed to delete rule" : "ルールの削除に失敗しました");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="mb-4">
@@ -135,77 +101,58 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
           </Button>
 
           <div className="space-y-4">
-            {isInitialLoading ? (
-              Array.from({ length: 2 }).map((_, index) => (
-                <div key={index} className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm animate-pulse">
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-2 flex-1">
-                      <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-                      <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                      <div className="grid grid-cols-2 gap-4 mt-4">
-                        <div className="h-4 bg-gray-200 rounded"></div>
-                        <div className="h-4 bg-gray-200 rounded"></div>
-                      </div>
+            {rules.map((rule) => (
+              <div key={rule.id} className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-3 flex-1">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900">{rule.label}</h3>
+                      <p className="text-blue-600 text-sm">{rule.game.label}</p>
                     </div>
-                    <div className="h-10 w-10 bg-gray-200 rounded"></div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              rules.map((rule) => (
-                <div key={rule.id} className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-3 flex-1">
+                    <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900">{rule.label}</h3>
-                        <p className="text-blue-600 text-sm">{rule.game.label}</p>
+                        <p className="text-xs text-gray-500">
+                          {language === "en" ? "Datastore" : "データストア"}
+                        </p>
+                        <p className="text-sm text-gray-900">{rule.datastoreName}</p>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-xs text-gray-500">
-                            {language === "en" ? "Datastore" : "データストア"}
-                          </p>
-                          <p className="text-sm text-gray-900">{rule.datastoreName}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500">
-                            {language === "en" ? "Type" : "タイプ"}
-                          </p>
-                          <p className="text-sm text-gray-900">
-                            {rule.datastoreType === "standard" 
-                              ? (language === "en" ? "Standard" : "標準")
-                              : (language === "en" ? "Ordered" : "順序付き")}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500">
-                            {language === "en" ? "Key Pattern" : "キーパターン"}
-                          </p>
-                          <p className="text-sm text-gray-900 font-mono">{rule.keyPattern}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500">
-                            {language === "en" ? "Scope" : "スコープ"}
-                          </p>
-                          <p className="text-sm text-gray-900">{rule.scope}</p>
-                        </div>
+                      <div>
+                        <p className="text-xs text-gray-500">
+                          {language === "en" ? "Type" : "タイプ"}
+                        </p>
+                        <p className="text-sm text-gray-900">
+                          {rule.datastoreType === "standard"
+                            ? (language === "en" ? "Standard" : "標準")
+                            : (language === "en" ? "Ordered" : "順序付き")}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">
+                          {language === "en" ? "Key Pattern" : "キーパターン"}
+                        </p>
+                        <p className="text-sm text-gray-900 font-mono">{rule.keyPattern}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">
+                          {language === "en" ? "Scope" : "スコープ"}
+                        </p>
+                        <p className="text-sm text-gray-900">{rule.scope}</p>
                       </div>
                     </div>
-                    <Button
-                      variant="danger"
-                      onClick={() => {
-                        setSelectedRule(rule.id);
-                        setShowDeleteModal(true);
-                      }}
-                      className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
+                  <Button
+                    variant="danger"
+                    onClick={() => {
+                      setSelectedRule(rule.id);
+                      setShowDeleteModal(true);
+                    }}
+                    className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
-              ))
-            )}
+              </div>
+            ))}
           </div>
         </Card.Body>
       </Card>
@@ -236,9 +183,7 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                   className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
                   id="game-select"
                 >
-                  <option value="">
-                    {language === "en" ? "Select Game" : "ゲームを選択"}
-                  </option>
+                  <option value="">{language === "en" ? "Select Game" : "ゲームを選択"}</option>
                   {games.map((game) => (
                     <option key={game.id} value={game.id}>
                       {game.label}
@@ -252,7 +197,7 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                   {language === "en" ? "Game" : "ゲーム"}
                 </label>
               </div>
-      
+
               <div className="relative">
                 <input
                   type="text"
@@ -271,7 +216,7 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                   {language === "en" ? "Label" : "ラベル"}
                 </label>
               </div>
-      
+
               <div className="relative">
                 <input
                   type="text"
@@ -290,7 +235,7 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                   {language === "en" ? "Datastore Name" : "データストア名"}
                 </label>
               </div>
-      
+
               <div className="relative">
                 <select
                   value={formData.datastoreType}
@@ -314,7 +259,7 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                   {language === "en" ? "Type" : "タイプ"}
                 </label>
               </div>
-      
+
               <div className="relative">
                 <Tippy
                   content={
@@ -343,7 +288,7 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                   {language === "en" ? "Key Pattern" : "キーパターン"}
                 </label>
               </div>
-      
+
               <div className="relative">
                 <input
                   type="text"
@@ -375,19 +320,13 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                 disabled={isLoading}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
               >
-                {isLoading
-                  ? language === "en"
-                    ? "Adding..."
-                    : "追加中..."
-                  : language === "en"
-                  ? "Add"
-                  : "追加"}
+                {isLoading ? (language === "en" ? "Adding..." : "追加中...") : (language === "en" ? "Add" : "追加")}
               </button>
             </div>
           </div>
         </div>
       </Modal>
-      
+
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div
@@ -395,8 +334,8 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
             onClick={() => setShowDeleteModal(false)}
           ></div>
           <div
-            className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in"
             onClick={(e) => e.stopPropagation()}
+            className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in"
           >
             <div className="px-6 py-4">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
@@ -420,13 +359,7 @@ export default function RuleTab({ language, onUpdate }: RuleTabProps) {
                 disabled={isLoading}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
               >
-                {isLoading
-                  ? language === "en"
-                    ? "Deleting..."
-                    : "削除中..."
-                  : language === "en"
-                  ? "Delete"
-                  : "削除"}
+                {isLoading ? (language === "en" ? "Deleting..." : "削除中...") : (language === "en" ? "Delete" : "削除")}
               </button>
             </div>
           </div>

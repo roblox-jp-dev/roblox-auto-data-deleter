@@ -27,6 +27,19 @@ interface Game {
   };
 }
 
+interface Rule {
+  id: string;
+  gameId: string;
+  label: string;
+  datastoreName: string;
+  datastoreType: string;
+  keyPattern: string;
+  scope: string;
+  game: {
+    label: string;
+  };
+}
+
 interface PageProps {
   params: Promise<{ [key: string]: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -37,8 +50,10 @@ export default function Page({ searchParams }: PageProps) {
   const [activeTab, setActiveTab] = useState("main");
   const [apiKeys, setApiKeys] = useState<DataStoreApiKey[]>([]);
   const [games, setGames] = useState<Game[]>([]);
+  const [rules, setRules] = useState<Rule[]>([]);
   const router = useRouter();
 
+  // initialize language from searchParams
   useEffect(() => {
     const initializeLanguage = async () => {
       const resolvedParams = await searchParams;
@@ -70,9 +85,20 @@ export default function Page({ searchParams }: PageProps) {
     }
   };
 
+  const fetchRules = async () => {
+    try {
+      const response = await fetch("/api/setting/rule");
+      const data = await response.json();
+      setRules(data);
+    } catch (error) {
+      console.error("ルール一覧の取得に失敗しました:", error);
+    }
+  };
+
   useEffect(() => {
     fetchApiKeys();
     fetchGames();
+    fetchRules();
   }, []);
 
   const tabs = [
@@ -102,9 +128,7 @@ export default function Page({ searchParams }: PageProps) {
         </div>
         <button
           onClick={() => router.push("/logout")}
-          className="px-4 py-2 rounded-md transition-all duration-200 font-medium
-            text-red-600 hover:text-white hover:bg-red-600 border border-red-200
-            hover:shadow-sm"
+          className="px-4 py-2 rounded-md transition-all duration-200 font-medium text-red-600 hover:text-white hover:bg-red-600 border border-red-200 hover:shadow-sm"
         >
           {language === "en" ? "Logout" : "ログアウト"}
         </button>
@@ -114,34 +138,20 @@ export default function Page({ searchParams }: PageProps) {
         {activeTab === "main" && (
           <div className="space-y-6">
             <div className="bg-white/70 backdrop-blur-sm p-6 rounded-lg shadow-sm">
-              <GeneralTab 
-                language={language}
-              />
+              <GeneralTab language={language} />
             </div>
             <div className="bg-white/70 backdrop-blur-sm p-6 rounded-lg shadow-sm">
-              <DataStoreKeyCard 
-                language={language}
-                apiKeys={apiKeys}
-                onUpdate={fetchApiKeys}
-              />
+              <DataStoreKeyCard language={language} apiKeys={apiKeys} onUpdate={fetchApiKeys} />
             </div>
             <div className="bg-white/70 backdrop-blur-sm p-6 rounded-lg shadow-sm">
-              <GameTab
-                language={language}
-                games={games}
-                apiKeys={apiKeys}
-                onUpdate={fetchGames}
-              />
+              <GameTab language={language} games={games} apiKeys={apiKeys} onUpdate={fetchGames} />
             </div>
             <div className="bg-white/70 backdrop-blur-sm p-6 rounded-lg shadow-sm">
-              <RuleTab
-                language={language}
-                onUpdate={() => {}}
-              />
+              <RuleTab language={language} rules={rules} games={games} onUpdate={fetchRules} />
             </div>
           </div>
         )}
-        
+
         {activeTab === "history" && (
           <div className="bg-white/70 backdrop-blur-sm p-6 rounded-lg shadow-sm">
             <HistoryTab language={language} />
