@@ -24,7 +24,11 @@ export async function updateGlobalSettings(webhookAuthKey: string) {
 // DataStoreApiKey
 export async function getDataStoreApiKeys() {
   return prisma.dataStoreApiKey.findMany({
-    include: { games: true }
+    select: {
+      id: true,
+      label: true,
+      games: true
+    }
   })
 }
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FiPlus, FiTrash2, FiEye, FiEyeOff } from "react-icons/fi";
+import { FiPlus, FiTrash2 } from "react-icons/fi";
 import { Card, Button, Modal } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -21,8 +21,6 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
   const [formData, setFormData] = useState({ label: "", apiKey: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const [showApiKey, setShowApiKey] = useState(false); // For modal input
-  const [visibleApiKeys, setVisibleApiKeys] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     setIsInitialLoading(false);
@@ -89,7 +87,10 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {isInitialLoading ? (
               Array.from({ length: 2 }).map((_, index) => (
-                <div key={index} className="bg-gray-50 rounded-lg p-5 border border-gray-100 animate-pulse">
+                <div
+                  key={index}
+                  className="bg-gray-50 rounded-lg p-5 border border-gray-100 animate-pulse"
+                >
                   <div className="flex justify-between items-start mb-3">
                     <div className="h-6 bg-gray-200 rounded w-1/3"></div>
                     <div className="h-8 w-8 bg-gray-200 rounded"></div>
@@ -117,23 +118,8 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
                   <div className="text-gray-700 flex items-center">
                     <span className="font-medium">API Key:</span>
                     <span className="font-mono bg-gray-100 px-2 py-1 rounded ml-2">
-                      {visibleApiKeys[key.id] ? key.apiKey : "••••••••"}
+                      ••••••••
                     </span>
-                    <button
-                      onClick={() =>
-                        setVisibleApiKeys((prev) => ({
-                          ...prev,
-                          [key.id]: !prev[key.id],
-                        }))
-                      }
-                      className="ml-2"
-                    >
-                      {visibleApiKeys[key.id] ? (
-                        <FiEyeOff className="h-4 w-4 text-gray-500" />
-                      ) : (
-                        <FiEye className="h-4 w-4 text-gray-500" />
-                      )}
-                    </button>
                   </div>
                 </div>
               ))
@@ -177,7 +163,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
               </div>
               <div className="relative">
                 <input
-                  type={showApiKey ? "text" : "password"}
+                  type="password"
                   autoComplete="new-password"
                   value={formData.apiKey}
                   onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
@@ -191,16 +177,6 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
                 >
                   {language === "en" ? "API Key" : "APIキー"}
                 </label>
-                <div
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
-                  onClick={() => setShowApiKey(!showApiKey)}
-                >
-                  {showApiKey ? (
-                    <FiEyeOff className="h-5 w-5 text-gray-500" />
-                  ) : (
-                    <FiEye className="h-5 w-5 text-gray-500" />
-                  )}
-                </div>
               </div>
             </div>
             <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
