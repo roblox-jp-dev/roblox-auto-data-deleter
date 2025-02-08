@@ -59,7 +59,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
       if (axios.isAxiosError(error) && error.response) {
         toast.error(error.response.data.error);
       } else {
-        toast.warn(language === "en" ? "Failed to delete API key" : "APIキーの削除に失敗しました");
+        toast.error(language === "en" ? "Failed to delete API key" : "APIキーの削除に失敗しました");
       }
     } finally {
       setIsLoading(false);
