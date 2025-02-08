@@ -67,6 +67,12 @@ export async function DELETE(request: Request) {
 
     const result = await deleteDataStoreApiKey(id);
     if (!result.success) {
+      if (result.error === "GAME_EXISTS") {
+        return NextResponse.json(
+          { error: "このゲームは既に存在しています" },
+          { status: 409 }
+        );
+      }
       return NextResponse.json(
         { error: result.error },
         { status: 500 }

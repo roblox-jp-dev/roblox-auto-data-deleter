@@ -38,9 +38,12 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
-        toast.error(error.response.data.message);
+        const errorMsg =
+          error.response.data.message || error.response.data.error || 
+          (language === "en" ? "Failed to add API key" : "APIキーの追加に失敗しました");
+        toast.error(errorMsg);
       } else {
-        toast.warn(language === "en" ? "Failed to add API key" : "APIキーの追加に失敗しました");
+        toast.error(language === "en" ? "Failed to add API key" : "APIキーの追加に失敗しました");
       }
     } finally {
       setIsLoading(false);

@@ -46,18 +46,24 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const url = new URL(request.url);
-    const id = url.searchParams.get("id");
+    const idStr = url.searchParams.get("id");
 
-    if (!id) {
+    if (!idStr) {
       return NextResponse.json(
         { error: "IDが指定されていません" },
         { status: 400 }
       );
     }
 
-    const result = await deleteGame(id);
+    const result = await deleteGame(idStr);
 
     if (result.error) {
+      if (result.error === "RULE_EXISTS") {
+        return NextResponse.json(
+          { error: "ルールが存在しているためゲームを削除できません" },
+          { status: 409 }
+        );
+      }
       return NextResponse.json(
         { error: result.error },
         { status: 500 }
@@ -66,8 +72,7 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "エラーが発生しました";
+    const message = error instanceof Error ? error.message : "エラーが発生しました";
     return NextResponse.json(
       { error: message },
       { status: 500 }

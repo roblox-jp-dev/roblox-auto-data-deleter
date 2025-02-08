@@ -51,7 +51,7 @@ export async function deleteDataStoreApiKey(id: string): Promise<{ success: bool
       });
 
       if (gameCount > 0) {
-        return { success: false, error: 'APIキーを使用しているゲームが存在するため削除できません' };
+        return { success: false, error: 'GAME_EXISTS' };
       }
 
       await tx.dataStoreApiKey.delete({
@@ -96,7 +96,7 @@ export async function deleteGame(id: string): Promise<{ success: boolean; error:
       });
 
       if (rules.length > 0) {
-        return { success: false, error: "ゲームに関連するルールが存在するため削除できません" };
+        return { success: false, error: "RULE_EXISTS" };
       }
 
       await tx.game.delete({
