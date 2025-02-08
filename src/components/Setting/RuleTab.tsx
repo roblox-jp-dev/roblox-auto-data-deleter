@@ -58,9 +58,9 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
       toast.success(language === "en" ? "Rule added" : "ルールを追加しました");
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
-        alert(error.response.data.error);
+        toast.error(error.response.data.message);
       } else {
-        alert(language === "en" ? "Failed to add rule" : "ルールの追加に失敗しました");
+        toast.error(language === "en" ? "Failed to add rule" : "ルールの追加に失敗しました");
       }
     } finally {
       setIsLoading(false);
@@ -77,7 +77,7 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
       toast.success(language === "en" ? "Rule deleted" : "ルールを削除しました");
     } catch (error) {
       console.error(error);
-      alert(language === "en" ? "Failed to delete rule" : "ルールの削除に失敗しました");
+      toast.error(language === "en" ? "Failed to delete rule" : "ルールの削除に失敗しました");
     } finally {
       setIsLoading(false);
     }

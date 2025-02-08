@@ -25,7 +25,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
   useEffect(() => {
     setIsInitialLoading(false);
   }, [apiKeys]);
-
+  
   const handleAdd = async () => {
     setIsLoading(true);
     try {
@@ -38,9 +38,9 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
-        alert(error.response.data.error);
+        toast.error(error.response.data.message);
       } else {
-        alert(language === "en" ? "Failed to add API key" : "APIキーの追加に失敗しました");
+        toast.warn(language === "en" ? "Failed to add API key" : "APIキーの追加に失敗しました");
       }
     } finally {
       setIsLoading(false);
@@ -57,9 +57,9 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
       toast.success(language === "en" ? "API key deleted" : "APIキーを削除しました");
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
-        alert(error.response.data.error);
+        toast.error(error.response.data.error);
       } else {
-        alert(language === "en" ? "Failed to delete API key" : "APIキーの削除に失敗しました");
+        toast.warn(language === "en" ? "Failed to delete API key" : "APIキーの削除に失敗しました");
       }
     } finally {
       setIsLoading(false);
@@ -145,38 +145,40 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
             </div>
             <div className="p-6 space-y-4">
               <div className="relative">
-                <input
-                  autoFocus
-                  type="text"
-                  value={formData.label}
-                  onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                  className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
-                  placeholder=" "
-                  id="label-input"
-                />
-                <label
-                  htmlFor="label-input"
-                  className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
-                >
-                  {language === "en" ? "Label" : "ラベル"}
-                </label>
+              <input
+                autoFocus
+                type="text"
+                required
+                value={formData.label}
+                onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
+                placeholder=" "
+                id="label-input"
+              />
+              <label
+                htmlFor="label-input"
+                className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
+              >
+                {language === "en" ? "Label" : "ラベル"}
+              </label>
               </div>
               <div className="relative">
-                <input
-                  type="password"
-                  autoComplete="new-password"
-                  value={formData.apiKey}
-                  onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
-                  className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
-                  placeholder=" "
-                  id="apikey-input"
-                />
-                <label
-                  htmlFor="apikey-input"
-                  className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
-                >
-                  {language === "en" ? "API Key" : "APIキー"}
-                </label>
+              <input
+                type="password"
+                autoComplete="new-password"
+                required
+                value={formData.apiKey}
+                onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
+                className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
+                placeholder=" "
+                id="apikey-input"
+              />
+              <label
+                htmlFor="apikey-input"
+                className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
+              >
+                {language === "en" ? "API Key" : "APIキー"}
+              </label>
               </div>
             </div>
             <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">

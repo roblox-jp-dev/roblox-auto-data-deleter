@@ -56,9 +56,9 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
       toast.success(language === "en" ? "Game added" : "ゲームが追加されました");
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
-        alert(error.response.data.error);
+        toast.error(error.response.data.error);
       } else {
-        alert(language === "en" ? "Failed to add game" : "ゲームの追加に失敗しました");
+        toast.error(language === "en" ? "Failed to add game" : "ゲームの追加に失敗しました");
       }
     } finally {
       setIsLoading(false);
@@ -76,9 +76,9 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
       } catch (error: unknown) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {
-          alert(error.response.data.error);
+          toast.error(error.response.data.error);
         } else {
-          alert(language === "en" ? "Failed to delete game" : "ゲームの削除に失敗しました");
+          toast.error(language === "en" ? "Failed to delete game" : "ゲームの削除に失敗しました");
         }
       } finally {
         setIsLoading(false);

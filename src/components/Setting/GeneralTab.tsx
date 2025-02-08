@@ -44,7 +44,7 @@ export function GeneralTab({ language }: SettingTabProps) {
       toast.success(language === "en" ? "Webhook auth key set" : "Webhook認証キーを設定しました");
     } catch (error: unknown) {
       console.error("Error setting webhook key:", error);
-      alert(language === "en" ? "Failed to set webhook key" : "Webhook認証キーの設定に失敗しました");
+      toast.error(language === "en" ? "Failed to set webhook auth key" : "Webhook認証キーの設定に失敗しました");
     } finally {
       setIsLoading(false);
     }
