@@ -27,7 +27,7 @@ export function GeneralTab({ language }: SettingTabProps) {
 
   useEffect(() => {
     fetchWebhookAuthKey();
-    setWebhookUrl(`${window.location.origin}/webhooks/delete-request/`);
+    setWebhookUrl(`${window.location.origin}/webhook/delete-request/`);
   }, []);
 
   const handleClose = () => setShowModal(false);
