@@ -3,47 +3,55 @@ import { createHmac } from "crypto";
 import { getGlobalSettings, getGames, getRules, createHistory } from "@/lib/db";
 import axios from "axios";
 
+interface WebhookEmbed {
+  title: string;
+  description: string;
+  footer?: {
+    icon_url?: string;
+    text?: string;
+  };
+}
+
 interface WebhookPayload {
-  embeds: [{
-    title: string;
-    description: string;
-    footer: {
-      icon_url: string;
-      text: string;
-    };
-  }];
+  embeds: WebhookEmbed[];
 }
 
 export async function POST(request: Request) {
   try {
-    const payload: WebhookPayload = await request.json();
-    
-    const footerText = payload.embeds[0].footer.text;
+    const payload = (await request.json()) as WebhookPayload;
+    console.log("Webhook POST received:", payload);
+
+    // Ensure embeds exists and is non-empty
+    if (!payload.embeds || !Array.isArray(payload.embeds) || payload.embeds.length === 0) {
+      return NextResponse.json({ error: "Invalid payload: embeds missing" }, { status: 400 });
+    }
+
+    const embed = payload.embeds[0];
+    if (!embed.footer || !embed.footer.text) {
+      return NextResponse.json({ error: "Invalid payload: footer data missing" }, { status: 400 });
+    }
+
+    const footerText = embed.footer.text;
     const signatureMatch = footerText.match(/Roblox-Signature: ([^,]+)/);
     const signature = signatureMatch ? signatureMatch[1] : null;
-    
+
     const settings = await getGlobalSettings();
     const webhookAuthKey = settings?.webhookAuthKey;
 
     if (!webhookAuthKey && !signature) {
+      // No authentication configured and no signature provided; continue without auth
     } else if (webhookAuthKey && signature) {
       const hmac = createHmac('sha256', webhookAuthKey);
       const calculatedSignature = hmac.update(JSON.stringify(payload)).digest('hex');
-      
+
       if (calculatedSignature !== signature) {
-        return NextResponse.json(
-          { error: "署名が無効です" },
-          { status: 401 }
-        );
+        return NextResponse.json({ error: "署名が無効です" }, { status: 401 });
       }
     } else {
-      return NextResponse.json(
-        { error: "認証設定が不正です" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "認証設定が不正です" }, { status: 401 });
     }
 
-    const description = payload.embeds[0].description;
+    const description = embed.description;
     const userIdMatch = description.match(/User Id: ([^in]+)/);
     const gameIdMatch = description.match(/game\(s\) with Ids: ([^\s]+)/);
 
@@ -63,13 +71,13 @@ export async function POST(request: Request) {
       if (!game) continue;
 
       const rules = await getRules(game.id);
-      
+
       for (const rule of rules) {
         try {
           const processedDatastoreName = rule.datastoreName
             .replace("{userId}", userId)
             .replace("{playerId}", userId);
-          
+
           const processedKeyPattern = rule.keyPattern
             .replace("{userId}", userId)
             .replace("{playerId}", userId);
@@ -94,7 +102,6 @@ export async function POST(request: Request) {
             gameId: game.id,
             ruleIds: [rule.id]
           });
-
         } catch (error) {
           console.error(`Delete operation failed for game ${game.label}:`, error);
         }
@@ -102,7 +109,6 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true });
-
   } catch (error) {
     console.error("Webhook processing error:", error);
     return NextResponse.json(
