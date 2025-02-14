@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createHmac } from "crypto";
-import { getGlobalSettings, getGames, getRules, createHistory } from "@/lib/db";
+import { getGlobalSettings, getGames, getRules, createHistory, createErrorLog } from "@/lib/db";
 import axios from "axios";
 
 interface WebhookEmbed {
@@ -20,6 +20,12 @@ export async function POST(request: Request) {
   try {
     const payload = (await request.json()) as WebhookPayload;
     console.log("Webhook POST received:", payload);
+
+    try {
+      await createErrorLog("WEBHOOK", "Webhook POST received: " + JSON.stringify(payload));
+    } catch (logError) {
+      console.error("Failed to log webhook POST:", logError);
+    }
 
     // Ensure embeds exists and is non-empty
     if (!payload.embeds || !Array.isArray(payload.embeds) || payload.embeds.length === 0) {
