@@ -64,7 +64,7 @@ export default function ErrorLogTab({ language }: ErrorLogTabProps) {
       <Card>
         <Card.Header className="py-4">
           <h2 className="text-blue-600 text-xl font-bold">
-            {language === "en" ? "Error Log" : "エラーログ"}
+            {language === "en" ? "Log" : "ログ"}
           </h2>
         </Card.Header>
         <Card.Body>
