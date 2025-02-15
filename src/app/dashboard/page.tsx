@@ -104,7 +104,7 @@ export default function Page({ searchParams }: PageProps) {
   const tabs = [
     { id: "main", labelEn: "Settings", labelJa: "設定" },
     { id: "history", labelEn: "Delete History", labelJa: "削除履歴" },
-    { id: "errorLog", labelEn: "Error Log", labelJa: "エラーログ" },
+    { id: "errorLog", labelEn: "Error Log", labelJa: "ログ" },
   ];
 
   return (

@@ -284,25 +284,22 @@ export async function getHistoriesByUserId(userId: string) {
 
 // ErrorLog
 export async function getErrorLogs() {
-  return prisma.errorLog.findMany({
-    include: {
-      game: true
-    },
+  const logs = await prisma.errorLog.findMany({
     orderBy: {
       timestamp: 'desc'
     }
-  })
+  });
+  
+  return logs;
 }
 
 export async function createErrorLog(error: string, gameId: string) {
   return prisma.errorLog.create({
     data: {
       error,
-      game: {
-        connect: { id: gameId }
-      }
+      gameId
     }
-  })
+  });
 }
 
 export default prisma

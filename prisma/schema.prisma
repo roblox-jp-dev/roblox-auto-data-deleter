@@ -28,7 +28,6 @@ model Game {
   apiKeyId        String
   rules           Rule[]
   histories History[]
-  errors ErrorLog[]
 }
 
 model Rule {
@@ -62,8 +61,7 @@ model HistoryRules {
 
 model ErrorLog {
   id        String   @id @default(cuid())
-  game      Game     @relation(fields: [gameId], references: [id])
-  gameId    String
   error     String
+  gameId    String?
   timestamp DateTime @default(now())
 }

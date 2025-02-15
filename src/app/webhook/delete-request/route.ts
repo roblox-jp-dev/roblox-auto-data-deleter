@@ -21,20 +21,29 @@ export async function POST(request: Request) {
     const payload = (await request.json()) as WebhookPayload;
     console.log("Webhook POST received:", payload);
 
-    try {
-      await createErrorLog("WEBHOOK", "Webhook POST received: " + JSON.stringify(payload));
-    } catch (logError) {
-      console.error("Failed to log webhook POST:", logError);
-    }
-
     // Ensure embeds exists and is non-empty
     if (!payload.embeds || !Array.isArray(payload.embeds) || payload.embeds.length === 0) {
       return NextResponse.json({ error: "Invalid payload: embeds missing" }, { status: 400 });
     }
-
     const embed = payload.embeds[0];
     if (!embed.footer || !embed.footer.text) {
       return NextResponse.json({ error: "Invalid payload: footer data missing" }, { status: 400 });
+    }
+
+    // Extract gameId from description for logging (if available)
+    let gameIdForLog = "";
+    if (embed.description) {
+      const gameIdMatchForLog = embed.description.match(/game\(s\) with Ids: ([^\s]+)/);
+      if (gameIdMatchForLog) {
+        // If there are multiple game Ids, we store the first one
+        gameIdForLog = gameIdMatchForLog[1].split(',')[0].trim();
+      }
+    }
+
+    try {
+      await createErrorLog("Webhook POST received: " + JSON.stringify(payload), gameIdForLog);
+    } catch (logError) {
+      console.error("Failed to log webhook POST:", logError);
     }
 
     const footerText = embed.footer.text;
