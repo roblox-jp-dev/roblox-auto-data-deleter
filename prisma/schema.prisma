@@ -22,8 +22,8 @@ model DataStoreApiKey {
 model Game {
   id              String          @id @default(cuid())
   label           String
-  universeId      Int
-  startPlaceId    Int
+  universeId      BigInt
+  startPlaceId    BigInt
   dataStoreApiKey DataStoreApiKey @relation(fields: [apiKeyId], references: [id])
   apiKeyId        String
   rules           Rule[]
