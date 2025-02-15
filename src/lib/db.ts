@@ -85,7 +85,20 @@ export async function createGame(data: {
   startPlaceId: number
   apiKeyId: string
 }) {
-  return prisma.game.create({ data })
+  const game = await prisma.game.create({
+    data: {
+      label: data.label,
+      universeId: BigInt(data.universeId),
+      startPlaceId: BigInt(data.startPlaceId),
+      apiKeyId: data.apiKeyId,
+    }
+  })
+
+  return {
+    ...game,
+    universeId: game.universeId.toString(),
+    startPlaceId: game.startPlaceId.toString(),
+  }
 }
 
 export async function deleteGame(id: string): Promise<{ success: boolean; error: string | null }> {
