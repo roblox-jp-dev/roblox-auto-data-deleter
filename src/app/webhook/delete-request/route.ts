@@ -30,20 +30,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid payload: footer data missing" }, { status: 400 });
     }
 
-    // Extract gameId from description for logging (if available)
-    let gameIdForLog = "";
-    if (embed.description) {
-      const gameIdMatchForLog = embed.description.match(/game\(s\) with Ids: ([^\s]+)/);
-      if (gameIdMatchForLog) {
-        // If there are multiple game Ids, we store the first one
-        gameIdForLog = gameIdMatchForLog[1].split(',')[0].trim();
-      }
+    // Determine if this is a deletion request based on the description content.
+    // If it's not a deletion request, simply output to console and exit.
+    const description = embed.description || "";
+    const isDeleteRequest =
+      description.includes("User Id:") &&
+      description.includes("game(s) with Ids:");
+
+    if (!isDeleteRequest) {
+      console.log("Non-delete webhook received:", payload);
+      return NextResponse.json({ success: true });
     }
 
-    try {
-      await createErrorLog("Webhook POST received: " + JSON.stringify(payload), gameIdForLog);
-    } catch (logError) {
-      console.error("Failed to log webhook POST:", logError);
+    // Extract gameId from description for logging (if available)
+    let gameIdForLog = "";
+    const gameIdMatchForLog = description.match(/game\(s\) with Ids: ([^\s]+)/);
+    if (gameIdMatchForLog) {
+      gameIdForLog = gameIdMatchForLog[1].split(',')[0].trim();
     }
 
     const footerText = embed.footer.text;
@@ -66,15 +69,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "認証設定が不正です" }, { status: 401 });
     }
 
-    const description = embed.description;
+    // For deletion requests, save the webhook notification to the error log.
+    try {
+      await createErrorLog("Webhook POST received: " + JSON.stringify(payload), gameIdForLog);
+    } catch (logError) {
+      console.error("Failed to log webhook POST:", logError);
+    }
+
     const userIdMatch = description.match(/User Id: ([^in]+)/);
     const gameIdMatch = description.match(/game\(s\) with Ids: ([^\s]+)/);
 
     if (!userIdMatch || !gameIdMatch) {
-      return NextResponse.json(
-        { error: "必要な情報が見つかりません" },
-        { status: 400 }
-      );
+      console.log("Non-delete webhook received:", payload);
+      return NextResponse.json({ success: true });
     }
 
     const userId = userIdMatch[1].trim();
