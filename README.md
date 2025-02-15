@@ -38,7 +38,7 @@ npm run setup
 npm run start
 ```
 
-### SSL化
+## SSL化
 
 ### リバースプロキシ設定 (nginx / Apache)
 
@@ -60,9 +60,32 @@ server {
 }
 ```
 
+##### nginxのSSL化 (certbot利用)
+
+1. Certbotとnginx用プラグインをインストールします（例: Ubuntuの場合）:
+
+   ```shell
+   sudo apt update
+   sudo apt install certbot python3-certbot-nginx
+   ```
+
+2. Certbotを利用してSSL証明書を取得・設定します:
+
+   ```shell
+   sudo certbot --nginx -d your-domain.com
+   ```
+
+   ※ プロンプトにしたがってメールアドレスの入力や利用規約への同意を行ってください。
+
+3. 自動更新の確認:
+
+   ```shell
+   sudo systemctl status certbot.timer
+   ```
+
 #### Apacheによるリバースプロキシ設定
 
-Apacheの設定ファイル（例: `/etc/apache2/sites-available/000-default.conf`）に以下を追加してください（mod_proxyとmod_proxy_httpが有効なことを確認してください）
+設定ファイル（例: `/etc/apache2/sites-available/000-default.conf`）に以下を追加してください（mod_proxyとmod_proxy_httpが有効なことを確認）:
 
 ```apache
 <VirtualHost *:80>
@@ -73,6 +96,25 @@ Apacheの設定ファイル（例: `/etc/apache2/sites-available/000-default.con
     ProxyPassReverse / http://localhost:3000/
 </VirtualHost>
 ```
+
+##### ApacheのSSL化 (certbot利用)
+
+1. CertbotとApache用プラグインをインストールします（例: Ubuntuの場合）:
+
+   ```shell
+   sudo apt update
+   sudo apt install certbot python3-certbot-apache
+   ```
+
+2. Certbotを利用してSSL証明書を取得・設定します:
+
+   ```shell
+   sudo certbot --apache -d your-domain.com
+   ```
+
+   ※ プロンプトにしたがってメールアドレスの入力や利用規約への同意を行ってください。
+
+3. 自動更新設定が正しく動作しているか確認してください。
 
 ### Cloudflare Tunnelsによる設定
 
