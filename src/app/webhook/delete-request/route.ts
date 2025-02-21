@@ -105,33 +105,32 @@ export async function POST(request: Request) {
           const processedKeyPattern = rule.keyPattern
             .replace("{userId}", userId)
             .replace("{playerId}", userId);
-        
           // デバッグ用のログ出力
           console.log('Deleting data:', {
-            universeId: game.universeId,
-            datastoreName: processedDatastoreName,
-            scope: rule.scope,
-            entryKey: processedKeyPattern
+          universeId: game.universeId,
+          datastoreName: processedDatastoreName,
+          scope: rule.scope || "global",
+          entryKey: processedKeyPattern
           });
         
-            await axios.delete(
-            `https://apis.roblox.com/datastores/v1/universes/${game.universeId}/standard-datastores/datastore/entries/entry`,
-            {
-              headers: {
-              "x-api-key": game.dataStoreApiKey.apiKey,
-              "Content-Type": "application/json"
-              },
-              params: {
-              datastoreName: processedDatastoreName,
-              scope: rule.scope || "global",
-              entryKey: processedKeyPattern
-              }
+          await axios.delete(
+          `https://apis.roblox.com/datastores/v1/universes/${game.universeId}/standard-datastores/datastore/entries/entry`,
+          {
+            headers: {
+            "x-api-key": game.dataStoreApiKey.apiKey,
+            "Content-Type": "application/json"
+            },
+            params: {
+            datastoreName: processedDatastoreName,
+            scope: rule.scope || "global",
+            entryKey: processedKeyPattern
             }
-            );
+          }
+          );
         
           await createHistory({
             userId,
-            gameId: game.id,
+            gameId: game.universeId.toString(),
             ruleIds: [rule.id]
           });
         } catch (error) {

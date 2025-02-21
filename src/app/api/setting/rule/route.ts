@@ -23,7 +23,7 @@ export async function POST(request: Request) {
         const data = await request.json();
 
         const { gameId, label, datastoreName, datastoreType, keyPattern, scope } = data;
-        
+
         // より詳細なバリデーション
         const validationErrors = [];
         if (!gameId) validationErrors.push("gameId");
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 
         if (validationErrors.length > 0) {
             return NextResponse.json(
-                { 
+                {
                     error: "必須パラメータが不足しています",
                     missing: validationErrors
                 },
@@ -42,13 +42,16 @@ export async function POST(request: Request) {
             );
         }
 
+        // scopeが空白またはundefinedの場合は"global"を使用
+        const normalizedScope = !scope || scope.trim() === "" ? "global" : scope;
+
         const rule = await createRule({
             gameId,
             label,
             datastoreName,
             datastoreType,
             keyPattern,
-            scope
+            scope: normalizedScope // 正規化されたscopeを使用
         });
         return NextResponse.json(rule);
     } catch (err: unknown) {
