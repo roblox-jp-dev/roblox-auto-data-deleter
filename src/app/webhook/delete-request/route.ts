@@ -89,7 +89,7 @@ export async function POST(request: Request) {
 
     const games = await getGames();
     for (const gameId of gameIds) {
-      const game = games.find(g => g.startPlaceId.toString() === gameId);
+      const game = games.find(g => g.universeId.toString() === gameId);
       if (!game) continue;
 
       const rules = await getRules(game.id);
