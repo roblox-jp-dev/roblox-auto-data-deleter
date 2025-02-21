@@ -1,12 +1,19 @@
-import { PrismaClient, Game } from '@prisma/client'
+import { PrismaClient, Game, DataStoreApiKey, Rule } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-function formatGame(game: Game) {
+type GameWithRelations = Game & {
+  dataStoreApiKey: DataStoreApiKey;
+  rules: Rule[];
+};
+
+function formatGame(game: GameWithRelations) {
   return {
     ...game,
     universeId: game.universeId.toString(),
-    startPlaceId: game.startPlaceId.toString()
+    startPlaceId: game.startPlaceId.toString(),
+    dataStoreApiKey: game.dataStoreApiKey,
+    rules: game.rules
   }
 }
 
@@ -35,12 +42,17 @@ export async function getDataStoreApiKeys() {
     select: {
       id: true,
       label: true,
-      games: true
+      games: {
+        include: {
+          dataStoreApiKey: true,
+          rules: true
+        }
+      }
     }
   });
   return keys.map(key => ({
     ...key,
-    games: key.games.map((game: Game) => formatGame(game))
+    games: key.games.map((game) => formatGame(game as GameWithRelations))
   }));
 }
 
@@ -89,7 +101,7 @@ export async function getGames() {
       rules: true
     }
   });
-  return games.map((game: Game) => formatGame(game));
+  return games.map((game: GameWithRelations) => formatGame(game));
 }
 
 export async function createGame(data: {
