@@ -112,20 +112,20 @@ export async function POST(request: Request) {
             entryKey: processedKeyPattern
           });
         
-          await axios.delete(
+            await axios.delete(
             `https://apis.roblox.com/datastores/v1/universes/${game.universeId}/standard-datastores/datastore/entries/entry`,
             {
               headers: {
-                "x-api-key": game.dataStoreApiKey.apiKey,
-                "Content-Type": "application/json"
+              "x-api-key": game.dataStoreApiKey.apiKey,
+              "Content-Type": "application/json"
               },
               params: {
-                datastoreName: processedDatastoreName,
-                scope: rule.scope,
-                entryKey: processedKeyPattern
+              datastoreName: processedDatastoreName,
+              scope: rule.scope || "global",
+              entryKey: processedKeyPattern
               }
             }
-          );
+            );
         
           await createHistory({
             userId,
