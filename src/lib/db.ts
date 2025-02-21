@@ -1,6 +1,14 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Game } from '@prisma/client'
 
 const prisma = new PrismaClient()
+
+function formatGame(game: Game) {
+  return {
+    ...game,
+    universeId: game.universeId.toString(),
+    startPlaceId: game.startPlaceId.toString()
+  }
+}
 
 // GlobalSettings
 export async function getGlobalSettings() {
@@ -23,13 +31,17 @@ export async function updateGlobalSettings(webhookAuthKey: string) {
 
 // DataStoreApiKey
 export async function getDataStoreApiKeys() {
-  return prisma.dataStoreApiKey.findMany({
+  const keys = await prisma.dataStoreApiKey.findMany({
     select: {
       id: true,
       label: true,
       games: true
     }
-  })
+  });
+  return keys.map(key => ({
+    ...key,
+    games: key.games.map((game: Game) => formatGame(game))
+  }));
 }
 
 export async function createDataStoreApiKey(data: {
@@ -71,12 +83,13 @@ export async function deleteDataStoreApiKey(id: string): Promise<{ success: bool
 
 // Game
 export async function getGames() {
-  return prisma.game.findMany({
+  const games = await prisma.game.findMany({
     include: {
       dataStoreApiKey: true,
       rules: true
     }
-  })
+  });
+  return games.map((game: Game) => formatGame(game));
 }
 
 export async function createGame(data: {
@@ -90,7 +103,9 @@ export async function createGame(data: {
       label: data.label,
       universeId: BigInt(data.universeId),
       startPlaceId: BigInt(data.startPlaceId),
-      apiKeyId: data.apiKeyId,
+      dataStoreApiKey: {
+        connect: { id: data.apiKeyId }
+      }
     }
   })
 

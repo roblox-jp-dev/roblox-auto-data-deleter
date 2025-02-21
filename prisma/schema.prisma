@@ -27,7 +27,7 @@ model Game {
   dataStoreApiKey DataStoreApiKey @relation(fields: [apiKeyId], references: [id])
   apiKeyId        String
   rules           Rule[]
-  histories History[]
+  histories       History[]
 }
 
 model Rule {
