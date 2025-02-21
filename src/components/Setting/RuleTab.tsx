@@ -14,7 +14,7 @@ interface Rule {
   datastoreName: string;
   datastoreType: string;
   keyPattern: string;
-  scope: string;
+  scope?: string;
   game: {
     label: string;
   };

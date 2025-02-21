@@ -31,7 +31,6 @@ export async function POST(request: Request) {
         if (!datastoreName) validationErrors.push("datastoreName");
         if (!datastoreType) validationErrors.push("datastoreType");
         if (!keyPattern) validationErrors.push("keyPattern");
-        if (!scope) validationErrors.push("scope");
 
         if (validationErrors.length > 0) {
             return NextResponse.json(

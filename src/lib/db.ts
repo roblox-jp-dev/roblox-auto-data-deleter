@@ -180,7 +180,7 @@ export async function createRule(data: {
   datastoreName: string
   datastoreType: string
   keyPattern: string
-  scope: string
+  scope?: string
 }) {
   return prisma.rule.create({ data })
 }

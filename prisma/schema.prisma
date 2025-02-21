@@ -38,7 +38,7 @@ model Rule {
   datastoreName String
   datastoreType String
   keyPattern    String
-  scope         String
+  scope         String   @default("global")
   histories     HistoryRules[]
 }
 
