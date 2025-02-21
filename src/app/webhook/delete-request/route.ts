@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createHmac } from "crypto";
 import { getGlobalSettings, getGames, getRules, createHistory, createErrorLog } from "@/lib/db";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 interface WebhookEmbed {
   title: string;
@@ -99,33 +99,55 @@ export async function POST(request: Request) {
           const processedDatastoreName = rule.datastoreName
             .replace("{userId}", userId)
             .replace("{playerId}", userId);
-
+        
           const processedKeyPattern = rule.keyPattern
             .replace("{userId}", userId)
             .replace("{playerId}", userId);
-
-          await axios.post(
-            `https://apis.roblox.com/datastores/v1/universes/${game.universeId}/standard-datastores/datastore/entries/entry/delete`,
-            {
-              datastoreName: processedDatastoreName,
-              scope: rule.scope,
-              key: processedKeyPattern
-            },
+        
+          // デバッグ用のログ出力
+          console.log('Deleting data:', {
+            universeId: game.universeId,
+            datastoreName: processedDatastoreName,
+            scope: rule.scope,
+            entryKey: processedKeyPattern
+          });
+        
+          await axios.delete(
+            `https://apis.roblox.com/datastores/v1/universes/${game.universeId}/standard-datastores/datastore/entries/entry`,
             {
               headers: {
                 "x-api-key": game.dataStoreApiKey.apiKey,
                 "Content-Type": "application/json"
+              },
+              params: {
+                datastoreName: processedDatastoreName,
+                scope: rule.scope,
+                entryKey: processedKeyPattern
               }
             }
           );
-
+        
           await createHistory({
             userId,
             gameId: game.id,
             ruleIds: [rule.id]
           });
         } catch (error) {
-          console.error(`Delete operation failed for game ${game.label}:`, error);
+          const axiosError = error as AxiosError;
+          const errorMessage = `Delete operation failed for game ${game.label}: ${axiosError.message}`;
+          console.error(errorMessage);
+
+          // エラーの詳細情報を作成
+          const errorDetails = {
+            status: axiosError.response?.status,
+            statusText: axiosError.response?.statusText,
+            data: axiosError.response?.data
+          };
+
+          await createErrorLog(
+            `${errorMessage}\nDetails: ${JSON.stringify(errorDetails)}`,
+            game.universeId.toString()
+          );
         }
       }
     }
