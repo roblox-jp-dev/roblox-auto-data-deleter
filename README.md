@@ -14,6 +14,7 @@
 git clone https://github.com/roblox-jp-dev/roblox-data-auto-deleter.git
 cd roblox-data-auto-deleter
 npm install
+npx auth secret
 npm run setup
 ```
 
