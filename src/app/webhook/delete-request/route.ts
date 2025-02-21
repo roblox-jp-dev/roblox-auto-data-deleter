@@ -51,7 +51,9 @@ export async function POST(request: Request) {
 
     const footerText = embed.footer.text;
     const signatureMatch = footerText.match(/Roblox-Signature: ([^,]+)/);
+    const timestampMatch = footerText.match(/Timestamp: (\d+)/);
     const signature = signatureMatch ? signatureMatch[1] : null;
+    const timestamp = timestampMatch ? timestampMatch[1].trim() : null;
 
     const settings = await getGlobalSettings();
     const webhookAuthKey = settings?.webhookAuthKey;
@@ -60,7 +62,7 @@ export async function POST(request: Request) {
       // No authentication configured and no signature provided; continue without auth
     } else if (webhookAuthKey && signature) {
       const hmac = createHmac('sha256', webhookAuthKey);
-      const calculatedSignature = hmac.update(JSON.stringify(payload)).digest('hex');
+      const calculatedSignature = hmac.update(`${timestamp}.${description}`).digest('base64');
 
       if (calculatedSignature !== signature) {
         return NextResponse.json({ error: "署名が無効です" }, { status: 401 });
