@@ -130,7 +130,7 @@ export async function POST(request: Request) {
         
           await createHistory({
             userId,
-            gameId: game.universeId.toString(),
+            gameId: game.id,
             ruleIds: [rule.id]
           });
         } catch (error) {

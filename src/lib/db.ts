@@ -198,21 +198,6 @@ export async function createHistory(data: {
   ruleIds: string[]
 }) {
   try {
-    const universeId = parseInt(data.gameId, 10);
-    if (isNaN(universeId)) {
-      throw new Error(`無効なUniverseID: ${data.gameId}`);
-    }
-
-    const game = await prisma.game.findFirst({
-      where: { universeId }
-    });
-    
-    console.log('検索されたゲーム:', game);
-
-    if (!game) {
-      throw new Error(`ゲームが見つかりません: ${universeId}`);
-    }
-
     const existingRules = await prisma.rule.findMany({
       where: {
         id: {
@@ -234,7 +219,7 @@ export async function createHistory(data: {
     return await prisma.$transaction(async (tx) => {
       const history = await tx.history.create({
         data: {
-          gameId: game.id,
+          gameId: data.gameId, // 直接gameIdを使用
           userId: data.userId
         }
       });
@@ -262,24 +247,6 @@ export async function createHistory(data: {
     console.error('履歴作成エラー:', error);
     throw error;
   }
-}
-
-export async function getHistories(gameId?: string) {
-  const where = gameId ? { gameId } : {};
-  return prisma.history.findMany({
-    where,
-    include: {
-      game: true,
-      rules: {
-        include: {
-          rule: true
-        }
-      },
-    },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  })
 }
 
 export async function getHistoryById(id: string) {
