@@ -219,7 +219,7 @@ export async function createHistory(data: {
     return await prisma.$transaction(async (tx) => {
       const history = await tx.history.create({
         data: {
-          gameId: data.gameId, // 直接gameIdを使用
+          gameId: data.gameId,
           userId: data.userId
         }
       });
@@ -251,7 +251,7 @@ export async function createHistory(data: {
 
 export async function getHistories(gameId?: string) {
   const where = gameId ? { gameId } : {};
-  return prisma.history.findMany({
+  const histories = await prisma.history.findMany({
     where,
     include: {
       game: true,
@@ -264,7 +264,16 @@ export async function getHistories(gameId?: string) {
     orderBy: {
       createdAt: 'desc'
     }
-  })
+  });
+
+  return histories.map(history => ({
+    ...history,
+    game: history.game ? {
+      ...history.game,
+      universeId: history.game.universeId.toString(),
+      startPlaceId: history.game.startPlaceId.toString()
+    } : null
+  }));
 }
 
 export async function getHistoryById(id: string) {
