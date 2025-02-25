@@ -249,6 +249,24 @@ export async function createHistory(data: {
   }
 }
 
+export async function getHistories(gameId?: string) {
+  const where = gameId ? { gameId } : {};
+  return prisma.history.findMany({
+    where,
+    include: {
+      game: true,
+      rules: {
+        include: {
+          rule: true
+        }
+      },
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  })
+}
+
 export async function getHistoryById(id: string) {
   return prisma.history.findUnique({
     where: { id },
