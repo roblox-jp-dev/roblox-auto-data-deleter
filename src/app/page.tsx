@@ -22,7 +22,7 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError('パスワードが正しくありません');
+        setError('パスワードが正しくないか、許可されていないIPアドレスからのアクセスです');
       } else {
         router.push('/dashboard');
         router.refresh();
