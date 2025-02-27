@@ -14,15 +14,15 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-
+  
     try {
       const result = await signIn('credentials', {
         password: password,
         redirect: false
       });
-
+  
       if (result?.error) {
-        setError('パスワードが正しくないか、許可されていないIPアドレスからのアクセスです');
+        setError(result.error);
       } else {
         router.push('/dashboard');
         router.refresh();
