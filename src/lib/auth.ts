@@ -31,7 +31,7 @@ export const authOptions = {
                     ? process.env.ALLOWED_IPS.split(',').map(ip => ip.trim()).filter(ip => ip)
                     : [];
 
-                if (allowedIPs.length > 0 && !allowedIPs.includes(ipAddress)) {
+                if (allowedIPs.length > 0 && !allowedIPs.includes("0.0.0.0") && !allowedIPs.includes(ipAddress)) {
                     throw new Error("このIPアドレスからのログインは許可されていません");
                 }
 
