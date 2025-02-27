@@ -6,7 +6,7 @@
     "dev": "next dev",
     "setup": "prisma generate && prisma migrate reset --force && next build",
     "build": "prisma generate && prisma migrate deploy && next build",
-    "start": "next start",
+    "start": "node check-password.js && next start",
     "lint": "next lint"
   },
   "dependencies": {
@@ -17,6 +17,7 @@
     "@types/react-datepicker": "^6.2.0",
     "axios": "^1.7.9",
     "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
     "framer-motion": "^12.0.6",
     "lucide-react": "^0.474.0",
     "next": "15.1.6",
