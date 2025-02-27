@@ -1,151 +1,99 @@
-# インストール手順
+# Roblox Data Auto Deleter
 
-## 前提条件
+## インストール手順
 
-- Node.jsバージョン22.8.0以上が必要です
+### 前提条件
+- Node.js バージョン 22.8.0 以上
 
-### インストール方法
+### セットアップ方法
 
-#### リポジトリのクローンとセットアップ
+1. **リポジトリのクローンとインストール**
+   ```shell
+   git clone https://github.com/roblox-jp-dev/roblox-data-auto-deleter.git
+   cd roblox-data-auto-deleter
+   npm install
+   npx auth secret
+   npm run setup
+   ```
 
-以下のコマンドをターミナルで実行してください。
+2. **環境変数の設定**  
+   `.env.local` ファイルを編集して以下の設定を行います：
 
-```shell
-git clone https://github.com/roblox-jp-dev/roblox-data-auto-deleter.git
-cd roblox-data-auto-deleter
-npm install
-npx auth secret
-npm run setup
-```
+   | 変数名 | 説明 |
+   |--------|------|
+   | `AUTH_PASSWORD` | ログインパスワード（9文字以上で記号を含む必要あり。初期値: `1234`） |
+   | `AUTH_SECRET` | セッション暗号化用の秘密キー（公開しないでください） |
+   | `NEXTAUTH_URL` | アプリケーションのURL |
+   | `ALLOWED_IP` | 許可IPアドレスリスト（例: `127.0.0.1, 0.0.0.0`）※`0.0.0.0`を含めると全IP許可 |
+   | `MAX_LOGIN_ATTEMPTS` | ログイン失敗の最大回数（初期値: `5`） |
+   | `LOGIN_ATTEMPTS_TIMEOUT` | アカウントロック期間（分単位、初期値: `10`） |
 
-#### 環境変数の設定
+3. **アプリケーション起動**
+   ```shell
+   npm run start
+   ```
 
-プロジェクトルートにある `.env.local` ファイルをテキストエディターで開き、必要に応じて以下の設定を変更してください。
+## デプロイと SSL 設定
 
-- `AUTH_PASSWORD`  
-   ログイン時に使用するパスワード。初期値は `1234` です
-   ただし、パスワードは9文字以上かつ記号が含まれている必要があります。
+### 方法1: リバースプロキシによる SSL 設定
 
-- `AUTH_SECRET`  
-   セッションの暗号化に使用する秘密キーです。第三者に公開しないようにしてください
+#### Nginx の場合
 
-- `NEXTAUTH_URL`  
-   アプリケーションを動作させるURLです。実行する環境に合わせて設定してください
+1. **基本設定**  
+   `/etc/nginx/conf.d/your-site.conf` に追加:
+   ```nginx
+   server {
+       listen 80;
+       server_name your-domain.com;
+       
+       location / {
+           proxy_pass http://localhost:3000;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+       }
+   }
+   ```
 
-- `ALLOWED_IP`
-   許可されたIPアドレスのリストです。
-   ```127.0.0.1, 0.0.0.0```のような形で指定します。
-   もし0.0.0.0が含まれていた場合は、すべてのIPアドレスが許可されます
-
-- `MAX_LOGIN_ATTEMPTS`
-   連続してログインに失敗できる最大回数です。この回数を超えるとアカウントがロックされます。
-   初期値は `5` です
-
-- `LOGIN_ATTEMPTS_TIMEOUT`
-   アカウントがロックされる期間（分単位）です。この時間が経過すると再度ログインが可能になります。
-   初期値は `10` 分です
-
-#### 起動
-
-以下のコマンドをターミナルで実行してください
-
-```shell
-npm run start
-```
-
-## SSL化
-
-### リバースプロキシ設定 (nginx / Apache)
-
-#### nginxによるリバースプロキシ設定
-
-`/etc/nginx/conf.d/your-site.conf`に以下の設定例を追加してください：
-
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-    
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-}
-```
-
-##### nginxのSSL化 (certbot利用)
-
-1. Certbotとnginx用プラグインをインストールします（例: Ubuntuの場合）:
-
+2. **SSL設定 (Certbot)**
    ```shell
    sudo apt update
    sudo apt install certbot python3-certbot-nginx
-   ```
-
-2. Certbotを利用してSSL証明書を取得・設定します:
-
-   ```shell
    sudo certbot --nginx -d your-domain.com
    ```
 
-   ※ プロンプトにしたがってメールアドレスの入力や利用規約への同意を行ってください。
+#### Apache の場合
 
-3. 自動更新の確認:
+1. **基本設定**  
+   `/etc/apache2/sites-available/000-default.conf` に追加:
+   ```apache
+   <VirtualHost *:80>
+       ServerName your-domain.com
 
-   ```shell
-   sudo systemctl status certbot.timer
+       ProxyPreserveHost On
+       ProxyPass / http://localhost:3000/
+       ProxyPassReverse / http://localhost:3000/
+   </VirtualHost>
    ```
 
-#### Apacheによるリバースプロキシ設定
-
-設定ファイル（例: `/etc/apache2/sites-available/000-default.conf`）に以下を追加してください（mod_proxyとmod_proxy_httpが有効なことを確認）:
-
-```apache
-<VirtualHost *:80>
-    ServerName your-domain.com
-
-    ProxyPreserveHost On
-    ProxyPass / http://localhost:3000/
-    ProxyPassReverse / http://localhost:3000/
-</VirtualHost>
-```
-
-##### ApacheのSSL化 (certbot利用)
-
-1. CertbotとApache用プラグインをインストールします（例: Ubuntuの場合）:
-
+2. **SSL設定 (Certbot)**
    ```shell
    sudo apt update
    sudo apt install certbot python3-certbot-apache
-   ```
-
-2. Certbotを利用してSSL証明書を取得・設定します:
-
-   ```shell
    sudo certbot --apache -d your-domain.com
    ```
 
-   ※ プロンプトにしたがってメールアドレスの入力や利用規約への同意を行ってください。
+### 方法2: Cloudflare Tunnels の利用
 
-3. 自動更新設定が正しく動作しているか確認してください。
+1. **`cloudflared` インストール**  
+   Cloudflare公式サイトからダウンロード
 
-### Cloudflare Tunnelsによる設定
-
-1. Cloudflare Tunnelのインストール  
-   Cloudflareの公式サイトから`cloudflared`をダウンロードします。
-
-2. Tunnelの作成  
-   ターミナルで以下のコマンドを実行してください：
-
+2. **トンネル作成**
    ```shell
    cloudflared tunnel create my-tunnel
    ```
 
-3. Tunnel設定ファイル（config.yml）の作成  
-   以下のような設定ファイルをプロジェクト内に作成し、必要に応じて編集してください：
-
+3. **設定ファイル作成 (config.yml)**
    ```yaml
    tunnel: <TUNNEL_ID>
    credentials-file: /path/to/credentials.json
@@ -155,57 +103,28 @@ server {
      - service: http_status:404
    ```
 
-4. Tunnelの実行  
-   以下のコマンドでTunnelを起動します
-
+4. **トンネル起動**
    ```shell
    cloudflared tunnel run my-tunnel
    ```
 
-## セキュリティに関する重要な注意事項
+## セキュリティ対策
 
-### HTTPS の強制使用
+### 重要な推奨事項
 
-本番環境では、常にHTTPSを使用してください。これにより、以下のセキュリティリスクを軽減できます：
+1. **HTTPS の強制使用**  
+   本番環境では必ず HTTPS を使用し、`NEXTAUTH_URL` を `https://` で始めるよう設定してください。
 
-1. 認証情報の盗聴
-2. セッションハイジャック
-3. 中間者攻撃
+2. **HSTS の設定**
 
-`.env.local`ファイルの`NEXTAUTH_URL`は、本番環境では必ず`https://`で始まるURLを設定してください。
+   **Nginx の場合:**
+   ```nginx
+   add_header Strict-Transport-Security "max-age=15768000; includeSubDomains" always;
+   ```
 
-### HSTS（HTTP Strict Transport Security）の設定
+   **Apache の場合:**
+   ```apache
+   Header always set Strict-Transport-Security "max-age=15768000; includeSubDomains"
+   ```
 
-セキュリティをさらに強化するために、nginxまたはApacheのリバースプロキシ設定でHSTSヘッダーを追加することを推奨します：
-
-#### nginxでのHSTS設定例
-
-```nginx
-server {
-    listen 443 ssl;
-    server_name your-domain.com;
-    
-    # SSLの設定（省略）
-    
-    # HSTSの設定（6ヶ月間有効）
-    add_header Strict-Transport-Security "max-age=15768000; includeSubDomains" always;
-    
-    # その他の設定（省略）
-}
-
-#### ApacheでのHSTS設定例
-
-```apache
-<VirtualHost *:443>
-    ServerName your-domain.com
-    
-    # SSLの設定（省略）
-    
-    # HSTSの設定（6ヶ月間有効）
-    Header always set Strict-Transport-Security "max-age=15768000; includeSubDomains"
-    
-    # その他の設定（省略）
-</VirtualHost>
-```
-
-この設定により、一度HTTPSで接続したブラウザは、次回以降も自動的にHTTPSでのアクセスを強制します。
+   これにより一度 HTTPS で接続したブラウザは以降も自動的に HTTPS での接続を強制します。
