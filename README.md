@@ -161,3 +161,51 @@ server {
    ```shell
    cloudflared tunnel run my-tunnel
    ```
+
+## セキュリティに関する重要な注意事項
+
+### HTTPS の強制使用
+
+本番環境では、常にHTTPSを使用してください。これにより、以下のセキュリティリスクを軽減できます：
+
+1. 認証情報の盗聴
+2. セッションハイジャック
+3. 中間者攻撃
+
+`.env.local`ファイルの`NEXTAUTH_URL`は、本番環境では必ず`https://`で始まるURLを設定してください。
+
+### HSTS（HTTP Strict Transport Security）の設定
+
+セキュリティをさらに強化するために、nginxまたはApacheのリバースプロキシ設定でHSTSヘッダーを追加することを推奨します：
+
+#### nginxでのHSTS設定例
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name your-domain.com;
+    
+    # SSLの設定（省略）
+    
+    # HSTSの設定（6ヶ月間有効）
+    add_header Strict-Transport-Security "max-age=15768000; includeSubDomains" always;
+    
+    # その他の設定（省略）
+}
+
+#### ApacheでのHSTS設定例
+
+```apache
+<VirtualHost *:443>
+    ServerName your-domain.com
+    
+    # SSLの設定（省略）
+    
+    # HSTSの設定（6ヶ月間有効）
+    Header always set Strict-Transport-Security "max-age=15768000; includeSubDomains"
+    
+    # その他の設定（省略）
+</VirtualHost>
+```
+
+この設定により、一度HTTPSで接続したブラウザは、次回以降も自動的にHTTPSでのアクセスを強制します。
