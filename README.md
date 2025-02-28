@@ -128,3 +128,37 @@
    ```
 
    これにより一度 HTTPS で接続したブラウザは以降も自動的に HTTPS での接続を強制します。
+
+## 法的情報
+
+### ライセンス
+
+このプロジェクトは [MIT ライセンス](./LICENSE.md)の下で公開されています。
+
+
+### 依存ライブラリ
+
+本プロジェクトは以下の主要な依存ライブラリを使用しています：
+
+| ライブラリ | ライセンス |
+|------------|------------|
+| @prisma/client | Apache-2.0 |
+| @radix-ui/react-select | MIT |
+| @radix-ui/react-tabs | MIT |
+| @tippyjs/react | MIT |
+| axios | MIT |
+| next | MIT |
+| react | MIT |
+| react-datepicker | MIT |
+| lucide-react | ISC |
+
+すべての依存関係とそのライセンスの詳細については[NOTICE](./NOTICE.md)ファイルをご参照ください。
+
+### 免責事項
+
+本ソフトウェアは「現状のまま」提供され、明示または黙示を問わず、いかなる種類の保証も行いません。Roblox JP Devおよびコントリビューターは、本ソフトウェアの使用によって生じるいかなる損害についても責任を負いません。
+
+---
+
+© 2025 Roblox好きの集い. All Rights Reserved.
+
