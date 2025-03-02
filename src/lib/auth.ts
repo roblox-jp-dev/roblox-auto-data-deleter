@@ -21,15 +21,27 @@ export const authOptions = {
                     throw new Error("パスワードを入力してください");
                 }
 
-                // IPアドレスチェック
-                const forwardedFor = req?.headers?.["x-forwarded-for"] || "";
-                const ipAddress = Array.isArray(forwardedFor)
-                    ? forwardedFor[0]?.split(',')[0].trim()
-                    : String(forwardedFor).split(',')[0].trim();
+                // IPアドレスの取得 - リクエストヘッダーから取得
+                let ipAddress = "127.0.0.1";
+                if (req && req.headers) {
+                    // X-Forwarded-For, X-Real-IP, またはリモートアドレスを確認
+                    const forwardedFor = req.headers['x-forwarded-for'] as string;
+                    const realIP = req.headers['x-real-ip'] as string;
+                    
+                    if (forwardedFor) {
+                        // カンマ区切りの場合は最初のIPを使用
+                        ipAddress = forwardedFor.split(',')[0].trim();
+                    } else if (realIP) {
+                        ipAddress = realIP;
+                    }
+                }
 
-                const allowedIPs = process.env.ALLOWED_IPS
-                    ? process.env.ALLOWED_IPS.split(',').map(ip => ip.trim()).filter(ip => ip)
+                const allowedIPs = process.env.ALLOWED_IP
+                    ? process.env.ALLOWED_IP.split(',').map(ip => ip.trim()).filter(ip => ip)
                     : [];
+                
+                console.log(`IPアドレス: ${ipAddress}`);
+                console.log(`許可されたIPアドレス: ${allowedIPs.join(', ')}`);
 
                 if (allowedIPs.length > 0 && !allowedIPs.includes("0.0.0.0") && !allowedIPs.includes(ipAddress)) {
                     throw new Error("このIPアドレスからのログインは許可されていません");
