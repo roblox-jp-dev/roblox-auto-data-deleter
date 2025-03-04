@@ -40,30 +40,12 @@ interface Rule {
   };
 }
 
-interface PageProps {
-  params: Promise<{ [key: string]: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}
-
-export default function Page({ searchParams }: PageProps) {
-  const [language, setLanguage] = useState("ja");
+export default function Page() {
   const [activeTab, setActiveTab] = useState("main");
   const [apiKeys, setApiKeys] = useState<DataStoreApiKey[]>([]);
   const [games, setGames] = useState<Game[]>([]);
   const [rules, setRules] = useState<Rule[]>([]);
   const router = useRouter();
-
-  // initialize language from searchParams
-  useEffect(() => {
-    const initializeLanguage = async () => {
-      const resolvedParams = await searchParams;
-      const lang = Array.isArray(resolvedParams.language)
-        ? resolvedParams.language[0]
-        : resolvedParams.language || "ja";
-      setLanguage(lang);
-    };
-    initializeLanguage();
-  }, [searchParams]);
 
   const fetchApiKeys = async () => {
     try {
@@ -71,7 +53,7 @@ export default function Page({ searchParams }: PageProps) {
       const data = await response.json();
       setApiKeys(data);
     } catch (error) {
-      console.error("APIキーの取得に失敗しました:", error);
+      console.error("Failed to fetch API keys:", error);
     }
   };
 
@@ -81,7 +63,7 @@ export default function Page({ searchParams }: PageProps) {
       const data = await response.json();
       setGames(data);
     } catch (error) {
-      console.error("ゲーム一覧の取得に失敗しました:", error);
+      console.error("Failed to fetch games list:", error);
     }
   };
 
@@ -91,7 +73,7 @@ export default function Page({ searchParams }: PageProps) {
       const data = await response.json();
       setRules(data);
     } catch (error) {
-      console.error("ルール一覧の取得に失敗しました:", error);
+      console.error("Failed to fetch rules list:", error);
     }
   };
 
@@ -102,9 +84,9 @@ export default function Page({ searchParams }: PageProps) {
   }, []);
 
   const tabs = [
-    { id: "main", labelEn: "Settings", labelJa: "設定" },
-    { id: "history", labelEn: "Delete History", labelJa: "削除履歴" },
-    { id: "errorLog", labelEn: "Error Log", labelJa: "ログ" },
+    { id: "main", label: "Settings"},
+    { id: "history", label: "Delete History"},
+    { id: "errorLog", label: "Error Log"},
   ];
 
   return (
@@ -122,7 +104,7 @@ export default function Page({ searchParams }: PageProps) {
                   : "bg-white/80 text-gray-700 hover:bg-gray-50 hover:shadow-sm border border-gray-200"
               )}
             >
-              {language === "en" ? tab.labelEn : tab.labelJa}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -130,7 +112,7 @@ export default function Page({ searchParams }: PageProps) {
           onClick={() => router.push("/logout")}
           className="px-4 py-2 rounded-md transition-all duration-200 font-medium text-red-600 hover:text-white hover:bg-red-600 border border-red-200 hover:shadow-sm"
         >
-          {language === "en" ? "Logout" : "ログアウト"}
+          Logout
         </button>
       </div>
 
@@ -138,29 +120,29 @@ export default function Page({ searchParams }: PageProps) {
         {activeTab === "main" && (
           <div className="space-y-6">
             <div className="bg-white/70 backdrop-blur-sm p-6 rounded-lg shadow-sm">
-              <GeneralTab language={language} />
+              <GeneralTab/>
             </div>
             <div className="bg-white/70 backdrop-blur-sm p-6 rounded-lg shadow-sm">
-              <DataStoreKeyCard language={language} apiKeys={apiKeys} onUpdate={fetchApiKeys} />
+              <DataStoreKeyCard apiKeys={apiKeys} onUpdate={fetchApiKeys} />
             </div>
             <div className="bg-white/70 backdrop-blur-sm p-6 rounded-lg shadow-sm">
-              <GameTab language={language} games={games} apiKeys={apiKeys} onUpdate={fetchGames} />
+              <GameTab games={games} apiKeys={apiKeys} onUpdate={fetchGames} />
             </div>
             <div className="bg-white/70 backdrop-blur-sm p-6 rounded-lg shadow-sm">
-              <RuleTab language={language} rules={rules} games={games} onUpdate={fetchRules} />
+              <RuleTab rules={rules} games={games} onUpdate={fetchRules} />
             </div>
           </div>
         )}
 
         {activeTab === "history" && (
           <div className="bg-white/70 backdrop-blur-sm p-6 rounded-lg shadow-sm">
-            <HistoryTab language={language} />
+            <HistoryTab/>
           </div>
         )}
 
         {activeTab === "errorLog" && (
           <div className="bg-white/70 backdrop-blur-sm p-6 rounded-lg shadow-sm">
-            <ErrorLogTab language={language} />
+            <ErrorLogTab/>
           </div>
         )}
       </div>

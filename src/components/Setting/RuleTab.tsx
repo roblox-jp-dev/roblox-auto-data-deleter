@@ -21,13 +21,12 @@ interface Rule {
 }
 
 interface RuleTabProps {
-  language: string;
   rules: Rule[];
   games: Array<{ id: string; label: string }>;
   onUpdate: () => void;
 }
 
-export default function RuleTab({ language, rules, games, onUpdate }: RuleTabProps) {
+export default function RuleTab({ rules, games, onUpdate }: RuleTabProps) {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedRule, setSelectedRule] = useState<string | null>(null);
@@ -55,15 +54,15 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
         scope: ""
       });
       onUpdate();
-      toast.success(language === "en" ? "Rule added" : "ルールを追加しました");
+      toast.success("Rule added");
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         const errorMsg =
           error.response.data.message || error.response.data.error ||
-          (language === "en" ? "Failed to add rule" : "ルールの追加に失敗しました");
+          "Failed to add rule";
         toast.error(errorMsg);
       } else {
-        toast.error(language === "en" ? "Failed to add rule" : "ルールの追加に失敗しました");
+        toast.error("Failed to add rule");
       }
     } finally {
       setIsLoading(false);
@@ -77,15 +76,15 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
       await axios.delete("/api/setting/rule", { data: { id: selectedRule } });
       setShowDeleteModal(false);
       onUpdate();
-      toast.success(language === "en" ? "Rule deleted" : "ルールを削除しました");
+      toast.success("Rule deleted");
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         const errorMsg =
           error.response.data.message || error.response.data.error ||
-          (language === "en" ? "Failed to delete rule" : "ルールの削除に失敗しました");
+          "Failed to delete rule";
         toast.error(errorMsg);
       } else {
-        toast.error(language === "en" ? "Failed to delete rule" : "ルールの削除に失敗しました");
+        toast.error("Failed to delete rule");
       }
     } finally {
       setIsLoading(false);
@@ -97,7 +96,7 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
       <Card>
         <Card.Header className="py-4">
           <h2 className="text-blue-600 text-xl font-bold">
-            {language === "en" ? "Rules" : "ルール"}
+            Rules
           </h2>
         </Card.Header>
         <Card.Body>
@@ -106,7 +105,7 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
             className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg transition-colors duration-200 border-0 mb-6 flex items-center"
           >
             <Plus className="mr-2 h-4 w-4" />
-            {language === "en" ? "Add Rule" : "ルールを追加"}
+            Add Rule
           </Button>
 
           <div className="space-y-4">
@@ -121,29 +120,27 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-xs text-gray-500">
-                          {language === "en" ? "Datastore" : "データストア"}
+                          Datastore
                         </p>
                         <p className="text-sm text-gray-900">{rule.datastoreName}</p>
                       </div>
                       <div>
                         <p className="text-xs text-gray-500">
-                          {language === "en" ? "Type" : "タイプ"}
+                          Type
                         </p>
                         <p className="text-sm text-gray-900">
-                          {rule.datastoreType === "standard"
-                            ? (language === "en" ? "Standard" : "標準")
-                            : (language === "en" ? "Ordered" : "順序付き")}
+                          {rule.datastoreType === "standard" ? "Standard" : "Ordered"}
                         </p>
                       </div>
                       <div>
                         <p className="text-xs text-gray-500">
-                          {language === "en" ? "Key Pattern" : "キーパターン"}
+                          Key Pattern
                         </p>
                         <p className="text-sm text-gray-900 font-mono">{rule.keyPattern}</p>
                       </div>
                       <div>
                         <p className="text-xs text-gray-500">
-                          {language === "en" ? "Scope" : "スコープ"}
+                          Scope
                         </p>
                         <p className="text-sm text-gray-900">{rule.scope}</p>
                       </div>
@@ -178,7 +175,7 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
           >
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-xl font-bold text-gray-900">
-                {language === "en" ? "Add Rule" : "ルールを追加"}
+                Add Rule
               </h3>
             </div>
             <div className="p-6 space-y-4">
@@ -192,7 +189,7 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
                   className="w-full px-4 pt-6 pb-2 border border-gray-300 rounded-md text-gray-900 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all peer"
                   id="game-select"
                 >
-                  <option value="">{language === "en" ? "Select Game" : "ゲームを選択"}</option>
+                  <option value="">Select Game</option>
                   {games.map((game) => (
                     <option key={game.id} value={game.id}>
                       {game.label}
@@ -203,7 +200,7 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
                   htmlFor="game-select"
                   className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
                 >
-                  {language === "en" ? "Game" : "ゲーム"}
+                  Game
                 </label>
               </div>
 
@@ -222,7 +219,7 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
                   htmlFor="label-input"
                   className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
                 >
-                  {language === "en" ? "Label" : "ラベル"}
+                  Label
                 </label>
               </div>
 
@@ -241,7 +238,7 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
                   htmlFor="datastore-name-input"
                   className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
                 >
-                  {language === "en" ? "Datastore Name" : "データストア名"}
+                  Datastore Name
                 </label>
               </div>
 
@@ -255,27 +252,23 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
                   id="datastore-type-select"
                 >
                   <option value="standard">
-                    {language === "en" ? "Standard" : "通常データストア"}
+                    Standard
                   </option>
                   <option value="ordered">
-                    {language === "en" ? "Ordered" : "並び替え済みデータストア"}
+                    Ordered
                   </option>
                 </select>
                 <label
                   htmlFor="datastore-type-select"
                   className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
                 >
-                  {language === "en" ? "Type" : "タイプ"}
+                  Type
                 </label>
               </div>
 
               <div className="relative">
                 <Tippy
-                  content={
-                    language === "en"
-                      ? "Replace the player ID in the key with {playerId}"
-                      : "キーにあるプレイヤーIDの部分を{playerId}に置き変えてください"
-                  }
+                  content="Replace the player ID in the key with {playerId}"
                   placement="top"
                   trigger="mouseenter focus"
                 >
@@ -294,7 +287,7 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
                   htmlFor="key-pattern-input"
                   className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
                 >
-                  {language === "en" ? "Key Pattern" : "キーパターン"}
+                  Key Pattern
                 </label>
               </div>
 
@@ -313,7 +306,7 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
                   htmlFor="scope-input"
                   className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
                 >
-                  {language === "en" ? "Scope" : "スコープ"}
+                  Scope
                 </label>
               </div>
             </div>
@@ -322,14 +315,14 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
                 onClick={() => setShowModal(false)}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
               >
-                {language === "en" ? "Cancel" : "キャンセル"}
+                Cancel
               </button>
               <button
                 onClick={handleAdd}
                 disabled={isLoading}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
               >
-                {isLoading ? (language === "en" ? "Adding..." : "追加中...") : (language === "en" ? "Add" : "追加")}
+                {isLoading ? "Adding..." : "Add"}
               </button>
             </div>
           </div>
@@ -348,12 +341,10 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
           >
             <div className="px-6 py-4">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
-                {language === "en" ? "Delete Rule" : "ルールを削除"}
+                Delete Rule
               </h3>
               <p className="text-gray-600">
-                {language === "en"
-                  ? "Are you sure you want to delete this rule?"
-                  : "このルールを削除してもよろしいですか？"}
+                Are you sure you want to delete this rule?
               </p>
             </div>
             <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
@@ -361,14 +352,14 @@ export default function RuleTab({ language, rules, games, onUpdate }: RuleTabPro
                 onClick={() => setShowDeleteModal(false)}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
               >
-                {language === "en" ? "Cancel" : "キャンセル"}
+                Cancel
               </button>
               <button
                 onClick={handleDelete}
                 disabled={isLoading}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
               >
-                {isLoading ? (language === "en" ? "Deleting..." : "削除中...") : (language === "en" ? "Delete" : "削除")}
+                {isLoading ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>

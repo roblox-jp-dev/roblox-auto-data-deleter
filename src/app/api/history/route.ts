@@ -24,7 +24,7 @@ export async function GET(request: Request) {
         const error = err as Error;
         console.error("History fetch error:", error);
         return NextResponse.json(
-            { error: "履歴の取得に失敗しました" },
+            { error: "Failed to fetch history" },
             { status: 500 }
         );
     }
@@ -35,10 +35,9 @@ export async function POST(request: Request) {
         const data = await request.json();
         const { userId, gameId, ruleIds } = data;
 
-        // バリデーション
         if (!userId || !gameId || !ruleIds || !Array.isArray(ruleIds)) {
             return NextResponse.json(
-                { error: "必須パラメータが不足しています" },
+                { error: "Required parameters are missing" },
                 { status: 400 }
             );
         }
@@ -54,7 +53,7 @@ export async function POST(request: Request) {
         const error = err as Error;
         console.error("History creation error:", error);
         return NextResponse.json(
-            { error: "履歴の作成に失敗しました" },
+            { error: "Failed to create history" },
             { status: 500 }
         );
     }

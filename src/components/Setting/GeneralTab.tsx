@@ -4,11 +4,7 @@ import { toast } from "react-toastify";
 import { Key } from "lucide-react";
 import { Modal, Card, Button } from "react-bootstrap";
 
-interface SettingTabProps {
-  language: string;
-}
-
-export function GeneralTab({ language }: SettingTabProps) {
+export function GeneralTab() {
   const [showModal, setShowModal] = useState(false);
   const [authKey, setAuthKey] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +17,7 @@ export function GeneralTab({ language }: SettingTabProps) {
       const response = await axios.get("/api/setting/general");
       setWebhookAuthKey(response.data.webhookAuthKey);
     } catch (error) {
-      console.error("認証キーの取得に失敗:", error);
+      console.error("Failed to fetch auth key:", error);
     }
   };
 
@@ -42,10 +38,10 @@ export function GeneralTab({ language }: SettingTabProps) {
       await fetchWebhookAuthKey();
       setShowModal(false);
       setAuthKey("");
-      toast.success(language === "en" ? "Webhook auth key set" : "Webhook認証キーを設定しました");
+      toast.success("Webhook auth key set");
     } catch (error: unknown) {
       console.error("Error setting webhook key:", error);
-      toast.error(language === "en" ? "Failed to set webhook auth key" : "Webhook認証キーの設定に失敗しました");
+      toast.error("Failed to set webhook auth key");
     } finally {
       setIsLoading(false);
     }
@@ -56,7 +52,7 @@ export function GeneralTab({ language }: SettingTabProps) {
       <Card className="mb-4">
         <Card.Header className="py-4">
           <h2 className="text-blue-600 text-2xl font-bold">
-            {language === "en" ? "General Settings" : "全体設定"}
+            General Settings
           </h2>
         </Card.Header>
         <Card.Body>
@@ -66,15 +62,15 @@ export function GeneralTab({ language }: SettingTabProps) {
               className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-md transition-colors duration-200 shadow flex items-center border-0"
             >
               <Key className="mr-2 h-4 w-4" />
-              {language === "en" ? "Set Webhook Auth Key" : "Webhook認証キーを設定"}
+              Set Webhook Auth Key
             </Button>
             {webhookAuthKey ? (
               <span className="text-green-500 font-semibold">
-                {language === "en" ? "Set" : "設定済"}
+                Set
               </span>
             ) : (
               <span className="text-red-500 font-semibold">
-                {language === "en" ? "Not Set" : "未設定"}
+                Not Set
               </span>
             )}
           </div>
@@ -145,7 +141,7 @@ export function GeneralTab({ language }: SettingTabProps) {
           >
             <div className="flex justify-between items-center border-b px-4 py-3">
               <h3 className="text-lg font-semibold text-gray-900">
-                {language === "en" ? "Set Webhook Auth Key" : "Webhook認証キーを設定"}
+                Set Webhook Auth Key
               </h3>
               <button
                 onClick={handleClose}
@@ -169,7 +165,7 @@ export function GeneralTab({ language }: SettingTabProps) {
                   htmlFor="auth-key-input"
                   className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
                 >
-                  {language === "en" ? "Auth key" : "認証キー"}
+                  Auth key
                 </label>
               </div>
             </div>
@@ -178,16 +174,14 @@ export function GeneralTab({ language }: SettingTabProps) {
                 onClick={handleClose}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
               >
-                {language === "en" ? "Cancel" : "キャンセル"}
+                Cancel
               </button>
               <button
                 onClick={handleSetWebhookKey}
                 disabled={isLoading}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
               >
-                {isLoading
-                  ? (language === "en" ? "Setting..." : "設定中...")
-                  : (language === "en" ? "Set" : "設定")}
+                {isLoading ? "Setting..." : "Set"}
               </button>
             </div>
           </div>

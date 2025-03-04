@@ -9,7 +9,7 @@ export async function GET() {
     const error = err as Error;
     console.error("Games fetch error:", error.message);
     return NextResponse.json(
-      { error: "ゲーム一覧の取得に失敗しました" },
+      { error: "Failed to retrieve game list" },
       { status: 500 }
     );
   }
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     
     if (!label || !universeId || !startPlaceId || !apiKeyId) {
       return NextResponse.json(
-        { error: "必須パラメータが不足しています" },
+        { error: "Missing required parameters" },
         { status: 400 }
       );
     }
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     const error = err as Error;
     console.error("Game creation error:", error.message);
     return NextResponse.json(
-      { error: "ゲームの作成に失敗しました" },
+      { error: "Failed to create game" },
       { status: 500 }
     );
   }
@@ -50,7 +50,7 @@ export async function DELETE(request: Request) {
 
     if (!idStr) {
       return NextResponse.json(
-        { error: "IDが指定されていません" },
+        { error: "ID not specified" },
         { status: 400 }
       );
     }
@@ -60,7 +60,7 @@ export async function DELETE(request: Request) {
     if (result.error) {
       if (result.error === "RULE_EXISTS") {
         return NextResponse.json(
-          { error: "ルールが存在しているためゲームを削除できません" },
+          { error: "Cannot delete game because rules exist" },
           { status: 409 }
         );
       }
@@ -72,7 +72,7 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "エラーが発生しました";
+    const message = error instanceof Error ? error.message : "An error occurred";
     return NextResponse.json(
       { error: message },
       { status: 500 }

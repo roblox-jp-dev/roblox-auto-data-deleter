@@ -14,7 +14,7 @@ export async function GET() {
     const error = err as Error;
     console.error("DataStore API Keys fetch error:", error.message);
     return NextResponse.json(
-      { error: "APIキーの取得に失敗しました" },
+      { error: "Failed to retrieve API keys" },
       { status: 500 }
     );
   }
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     
     if (typeof label !== "string" || typeof apiKey !== "string") {
       return NextResponse.json(
-        { error: "ラベルとAPIキーは文字列である必要があります" },
+        { error: "Label and API key must be strings" },
         { status: 400 }
       );
     }
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     } catch (prismaError: unknown) {
       if (prismaError instanceof PrismaClientKnownRequestError && prismaError.code === 'P2002') {
         return NextResponse.json(
-          { error: "このラベルは既に使用されています" },
+          { error: "This label is already in use" },
           { status: 400 }
         );
       }
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     const error = err as Error;
     console.error("DataStore API Key creation error:", error.message);
     return NextResponse.json(
-      { error: "APIキーの作成に失敗しました" },
+      { error: "Failed to create API key" },
       { status: 500 }
     );
   }
@@ -60,7 +60,7 @@ export async function DELETE(request: Request) {
 
     if (!id) {
       return NextResponse.json(
-        { error: "IDが指定されていません" },
+        { error: "ID is not specified" },
         { status: 400 }
       );
     }
@@ -69,7 +69,7 @@ export async function DELETE(request: Request) {
     if (!result.success) {
       if (result.error === "GAME_EXISTS") {
         return NextResponse.json(
-          { error: "このゲームは既に存在しています" },
+          { error: "This game already exists" },
           { status: 409 }
         );
       }
@@ -81,7 +81,7 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json(result);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "エラーが発生しました";
+    const message = error instanceof Error ? error.message : "An error occurred";
     return NextResponse.json(
       { error: message },
       { status: 500 }

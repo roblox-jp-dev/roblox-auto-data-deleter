@@ -4,10 +4,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 
-interface HistoryTabProps {
-  language: string;
-}
-
 interface History {
   id: string;
   userId: string;
@@ -25,7 +21,7 @@ interface History {
   }[];
 }
 
-export default function HistoryTab({ language }: HistoryTabProps) {
+export default function HistoryTab() {
   const [histories, setHistories] = useState<History[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [userIdFilter, setUserIdFilter] = useState("");
@@ -71,7 +67,7 @@ export default function HistoryTab({ language }: HistoryTabProps) {
       <Card>
         <Card.Header className="py-4">
           <h2 className="text-blue-600 text-xl font-bold">
-            {language === "en" ? "History" : "履歴"}
+            History
           </h2>
         </Card.Header>
         <Card.Body>
@@ -79,7 +75,7 @@ export default function HistoryTab({ language }: HistoryTabProps) {
             <div className="space-y-8">
               <Form.Group>
                 <Form.Label className="text-sm font-medium text-gray-700 mb-2 block">
-                  {language === "en" ? "User ID" : "ユーザーID"}
+                  User ID
                 </Form.Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -89,7 +85,7 @@ export default function HistoryTab({ language }: HistoryTabProps) {
                   </div>
                   <Form.Control
                     type="text"
-                    placeholder={language === "en" ? "Search by User ID..." : "ユーザーIDで検索..."}
+                    placeholder="Serach by User ID"
                     value={userIdFilter}
                     onChange={(e) => setUserIdFilter(e.target.value)}
                     className="pl-10 w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-gray-900 py-2.5"
@@ -99,7 +95,7 @@ export default function HistoryTab({ language }: HistoryTabProps) {
 
               <div>
                 <Form.Label className="text-sm font-medium text-gray-700 mb-2 block">
-                  {language === "en" ? "Date Range" : "期間"}
+                  Data Range
                 </Form.Label>
                 <div className="mt-3 flex gap-6">
                   <div className="relative flex-1">
@@ -110,7 +106,7 @@ export default function HistoryTab({ language }: HistoryTabProps) {
                       startDate={startDate}
                       endDate={endDate}
                       className="w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-gray-900 py-2.5"
-                      placeholderText={language === "en" ? "Start date" : "開始日"}
+                      placeholderText="Start date"
                       isClearable
                       dateFormat="yyyy/MM/dd"
                       popperPlacement="bottom-start"
@@ -127,7 +123,7 @@ export default function HistoryTab({ language }: HistoryTabProps) {
                       endDate={endDate}
                       minDate={startDate ?? undefined}
                       className="w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-gray-900 py-2.5"
-                      placeholderText={language === "en" ? "End date" : "終了日"}
+                      placeholderText="End date"
                       isClearable
                       dateFormat="yyyy/MM/dd"
                       popperPlacement="bottom-start"
@@ -164,12 +160,12 @@ export default function HistoryTab({ language }: HistoryTabProps) {
                 </div>
                 <div className="bg-gray-50 rounded-lg p-4">
                 <div className="font-medium text-gray-700 mb-2">
-                  {language === "en" ? "Game: " : "ゲーム: "}
+                  Game: 
                   {history.game.label}
                 </div>
                 <div className="space-y-2">
                   <div className="font-medium text-gray-700">
-                    {language === "en" ? "Applied Rules:" : "適用されたルール:"}
+                    Applied Rules
                   </div>
                   <ul className="list-disc list-inside text-sm text-gray-600">
                     {history.rules.map((historyRule, index) => {

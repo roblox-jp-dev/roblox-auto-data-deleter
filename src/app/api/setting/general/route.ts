@@ -12,7 +12,7 @@ export async function GET() {
     const error = err as Error;
     console.error("Settings fetch error:", error.message);
     return NextResponse.json(
-      { error: "設定の取得に失敗しました" },
+      { error: "Failed to retrieve settings" },
       { status: 500 }
     );
   }
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     
     if (typeof webhookAuthKey !== "string") {
       return NextResponse.json(
-        { error: "webhookAuthKeyは文字列である必要があります" },
+        { error: "webhookAuthKey must be a string" },
         { status: 400 }
       );
     }
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     const error = err as Error;
     console.error("Settings update error:", error.message);
     return NextResponse.json(
-      { error: "設定の更新に失敗しました" },
+      { error: "Failed to update settings" },
       { status: 500 }
     );
   }

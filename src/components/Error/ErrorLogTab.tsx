@@ -16,11 +16,7 @@ interface ErrorLog {
   timestamp: string;
 }
 
-interface ErrorLogTabProps {
-  language: string;
-}
-
-export default function ErrorLogTab({ language }: ErrorLogTabProps) {
+export default function ErrorLogTab() {
   const [logs, setLogs] = useState<ErrorLog[]>([]);
   const [games, setGames] = useState<Game[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -74,14 +70,14 @@ export default function ErrorLogTab({ language }: ErrorLogTabProps) {
       <Card>
         <Card.Header className="py-4">
           <h2 className="text-blue-600 text-xl font-bold">
-            {language === "en" ? "Log" : "ログ"}
+            Log
           </h2>
         </Card.Header>
         <Card.Body>
           <div className="mb-6 p-8 border border-gray-200 rounded-xl bg-white shadow-sm">
             <div>
               <Form.Label className="text-sm font-medium text-gray-700 mb-2 block">
-                {language === "en" ? "Date Range" : "期間"}
+                Data Range
               </Form.Label>
               <div className="mt-3 flex gap-6 mb-6">
                 <div className="relative flex-1">
@@ -92,7 +88,7 @@ export default function ErrorLogTab({ language }: ErrorLogTabProps) {
                     startDate={startDate}
                     endDate={endDate}
                     className="w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-gray-900 py-2.5"
-                    placeholderText={language === "en" ? "Start date" : "開始日"}
+                    placeholderText="Start date"
                     isClearable
                     dateFormat="yyyy/MM/dd"
                     popperPlacement="bottom-start"
@@ -109,7 +105,7 @@ export default function ErrorLogTab({ language }: ErrorLogTabProps) {
                     endDate={endDate}
                     minDate={startDate ?? undefined}
                     className="w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-gray-900 py-2.5"
-                    placeholderText={language === "en" ? "End date" : "終了日"}
+                    placeholderText="End date"
                     isClearable
                     dateFormat="yyyy/MM/dd"
                     popperPlacement="bottom-start"
@@ -150,11 +146,8 @@ export default function ErrorLogTab({ language }: ErrorLogTabProps) {
                           </div>
                           <div className="bg-gray-50 rounded-lg p-4">
                             <div className="font-medium text-gray-900 mb-2">
-                              {language === "en" ? "Game: " : "ゲーム: "}
-                              {game?.label ||
-                                (language === "en"
-                                  ? "Unknown Game"
-                                  : "不明なゲーム")}
+                              Game
+                              {game?.label || "Unknown Game" }
                             </div>
                             <div className="text-sm text-gray-900 whitespace-pre-wrap break-all">
                               {log.error}

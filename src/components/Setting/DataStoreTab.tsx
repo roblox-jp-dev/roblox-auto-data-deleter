@@ -5,7 +5,6 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 interface DataStoreKeyCardProps {
-  language: string;
   apiKeys: Array<{
     id: string;
     label: string;
@@ -14,7 +13,7 @@ interface DataStoreKeyCardProps {
   onUpdate: () => void;
 }
 
-export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCardProps) {
+export function DataStoreKeyCard({ apiKeys, onUpdate }: DataStoreKeyCardProps) {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
@@ -34,16 +33,16 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
         setShowModal(false);
         setFormData({ label: "", apiKey: "" });
         onUpdate();
-        toast.success(language === "en" ? "API key added" : "APIキーを追加しました");
+        toast.success("API key added");
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         const errorMsg =
           error.response.data.message || error.response.data.error || 
-          (language === "en" ? "Failed to add API key" : "APIキーの追加に失敗しました");
+          "Failed to add API key";
         toast.error(errorMsg);
       } else {
-        toast.error(language === "en" ? "Failed to add API key" : "APIキーの追加に失敗しました");
+        toast.error("Failed to add API key");
       }
     } finally {
       setIsLoading(false);
@@ -57,12 +56,12 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
       await axios.delete(`/api/setting/datastore?id=${selectedKey}`);
       setShowDeleteModal(false);
       onUpdate();
-      toast.success(language === "en" ? "API key deleted" : "APIキーを削除しました");
+      toast.success("API key deleted");
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         toast.error(error.response.data.error);
       } else {
-        toast.error(language === "en" ? "Failed to delete API key" : "APIキーの削除に失敗しました");
+        toast.error("Failed to delete API key");
       }
     } finally {
       setIsLoading(false);
@@ -74,7 +73,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
       <Card>
         <Card.Header className="py-4">
           <h2 className="text-blue-600 text-xl font-bold">
-            {language === "en" ? "DataStore API Keys" : "データストアAPIキー"}
+            DataStore API Keys
           </h2>
         </Card.Header>
         <Card.Body>
@@ -84,7 +83,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
             disabled={isInitialLoading}
           >
             <FiPlus className="mr-2 h-4 w-4" />
-            {language === "en" ? "Add API Key" : "APIキーを追加"}
+            Add API Key
           </Button>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -143,7 +142,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
           >
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-xl font-bold text-gray-900">
-                {language === "en" ? "Add API Key" : "APIキーを追加"}
+                Add API Key
               </h3>
             </div>
             <div className="p-6 space-y-4">
@@ -162,7 +161,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
                 htmlFor="label-input"
                 className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
               >
-                {language === "en" ? "Label" : "ラベル"}
+                Label
               </label>
               </div>
               <div className="relative">
@@ -180,7 +179,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
                 htmlFor="apikey-input"
                 className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
               >
-                {language === "en" ? "API Key" : "APIキー"}
+                API Key
               </label>
               </div>
             </div>
@@ -189,7 +188,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
                 onClick={() => setShowModal(false)}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
               >
-                {language === "en" ? "Cancel" : "キャンセル"}
+                Cancel
               </button>
               <button
                 onClick={handleAdd}
@@ -197,8 +196,8 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
               >
                 {isLoading
-                  ? (language === "en" ? "Adding..." : "追加中...")
-                  : (language === "en" ? "Add" : "追加")}
+                  ? "Adding..."
+                  : "Add"}
               </button>
             </div>
           </div>
@@ -214,12 +213,10 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
           <div className="bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl transform transition-all animate-modal-in modal-fade-in">
             <div className="px-6 py-4">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
-                {language === "en" ? "Delete API Key" : "APIキーを削除"}
+                Delete API Key
               </h3>
               <p className="text-gray-600">
-                {language === "en"
-                  ? "Are you sure you want to delete this API key?\nIf you delete it, the game and rules using it will also be deleted\nThis operation cannot be undone"
-                  : "このAPIキーを削除してもよろしいですか？"}
+                Are you sure you want to delete this API key?\nIf you delete it, the game and rules using it will also be deleted\nThis operation cannot be undone
               </p>
             </div>
             <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
@@ -227,7 +224,7 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
                 onClick={() => setShowDeleteModal(false)}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
               >
-                {language === "en" ? "Cancel" : "キャンセル"}
+                Cancel
               </button>
               <button
                 onClick={handleDelete}
@@ -235,8 +232,8 @@ export function DataStoreKeyCard({ language, apiKeys, onUpdate }: DataStoreKeyCa
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
               >
                 {isLoading
-                  ? (language === "en" ? "Deleting..." : "削除中...")
-                  : (language === "en" ? "Delete" : "削除")}
+                  ? "Deleting..."
+                  : "Delete"}
               </button>
             </div>
           </div>

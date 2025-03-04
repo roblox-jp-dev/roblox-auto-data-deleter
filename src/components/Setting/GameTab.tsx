@@ -16,7 +16,6 @@ interface Game {
 }
 
 interface GameTabProps {
-  language: string;
   games: Game[];
   apiKeys: Array<{
     id: string;
@@ -25,7 +24,7 @@ interface GameTabProps {
   onUpdate: () => void;
 }
 
-export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
+export function GameTab({ games, apiKeys, onUpdate }: GameTabProps) {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
@@ -53,12 +52,12 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
       setShowModal(false);
       setFormData({ label: "", universeId: "", startPlaceId: "", apiKeyId: "" });
       onUpdate();
-      toast.success(language === "en" ? "Game added" : "ゲームが追加されました");
+      toast.success("Game added");
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         toast.error(error.response.data.error);
       } else {
-        toast.error(language === "en" ? "Failed to add game" : "ゲームの追加に失敗しました");
+        toast.error("Failed to add game");
       }
     } finally {
       setIsLoading(false);
@@ -72,13 +71,13 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
         await axios.delete(`/api/setting/game?id=${selectedGame}`);
         setShowDeleteModal(false);
         onUpdate();
-        toast.success(language === "en" ? "Game deleted" : "ゲームが削除されました");
+        toast.success("Game deleted");
       } catch (error: unknown) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {
           toast.error(error.response.data.error);
         } else {
-          toast.error(language === "en" ? "Failed to delete game" : "ゲームの削除に失敗しました");
+          toast.error("Failed to delete game");
         }
       } finally {
         setIsLoading(false);
@@ -90,7 +89,7 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
       <Card>
         <Card.Header className="py-4">
           <h2 className="text-blue-600 text-xl font-bold">
-            {language === "en" ? "Games" : "ゲーム"}
+            Game
           </h2>
         </Card.Header>
         <Card.Body>
@@ -100,7 +99,7 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
             disabled={isInitialLoading}
           >
             <Plus className="mr-2 h-4 w-4" />
-            {language === "en" ? "Add Game" : "ゲームを追加"}
+            Add Game
           </Button>
 
           <div className="space-y-4">
@@ -127,13 +126,13 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
                         {game.label}
                       </h3>
                       <div className="text-sm text-gray-600">
-                        {language === "en" ? "Universe ID: " : "ユニバースID: "}{game.universeId}
+                        Universe ID: {game.universeId}
                       </div>
                       <div className="text-sm text-gray-600">
-                        {language === "en" ? "Start Place ID: " : "開始プレースID: "}{game.startPlaceId}
+                        Start Place ID: {game.startPlaceId}
                       </div>
                       <div className="text-sm text-gray-600">
-                        {language === "en" ? "API Key: " : "APIキー: "}{game.dataStoreApiKey.label}
+                        API Key: {game.dataStoreApiKey.label}
                       </div>
                     </div>
                     <button
@@ -169,7 +168,7 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
           >
         <div className="px-6 py-4 border-b border-gray-200">
           <h3 className="text-xl font-bold text-gray-900">
-            {language === "en" ? "Add Game" : "ゲームを追加"}
+            Add Game
           </h3>
         </div>
         <div className="p-6 space-y-4">
@@ -187,7 +186,7 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
           htmlFor="label-input"
           className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
             >
-          {language === "en" ? "Label" : "ラベル"}
+          Label
             </label>
           </div>
           <div className="relative">
@@ -203,7 +202,7 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
           htmlFor="universe-id-input"
           className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
             >
-          {language === "en" ? "Universe ID" : "ユニバースID"}
+          Universe ID
             </label>
           </div>
           <div className="relative">
@@ -219,7 +218,7 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
           htmlFor="start-place-id-input"
           className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
             >
-          {language === "en" ? "Start Place ID" : "開始プレースID"}
+          Starts Place ID
             </label>
           </div>
           <div className="relative">
@@ -230,7 +229,7 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
           id="api-key-input"
             >
           <option value="">
-            {language === "en" ? "Select API Key" : "APIキーを選択"}
+            Select API Key
           </option>
           {apiKeys.map((key) => (
             <option key={key.id} value={key.id}>
@@ -242,7 +241,7 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
           htmlFor="api-key-input"
           className="absolute text-sm font-medium text-gray-500 duration-150 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-blue-600"
             >
-          {language === "en" ? "API Key" : "APIキー"}
+          API Key
             </label>
           </div>
         </div>
@@ -251,7 +250,7 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
             onClick={() => setShowModal(false)}
             className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
           >
-            {language === "en" ? "Cancel" : "キャンセル"}
+            Cancel
           </button>
           <button
             onClick={handleAdd}
@@ -259,8 +258,8 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
           >
             {isLoading 
-          ? (language === "en" ? "Adding..." : "追加中...")
-          : (language === "en" ? "Add" : "追加")}
+          ? "Adding..."
+          : "Add"}
           </button>
         </div>
           </div>
@@ -283,12 +282,10 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
           >
         <div className="px-6 py-4">
           <h3 className="text-xl font-bold text-gray-900 mb-4">
-            {language === "en" ? "Delete Game" : "ゲームを削除"}
+            Delete Game
           </h3>
           <p className="text-gray-600">
-            {language === "en" 
-          ? "Are you sure you want to delete this game?\nIf you delete this game, the rules that use this game will also be deleted\nThis operation cannot be undone" 
-          : "このゲームを削除してもよろしいですか？"}
+            Are you sure you want to delete this game?\nIf you delete this game, the rules that use this game will also be deleted\nThis operation cannot be undone
           </p>
         </div>
         <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
@@ -296,7 +293,7 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
             onClick={() => setShowDeleteModal(false)}
             className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
           >
-            {language === "en" ? "Cancel" : "キャンセル"}
+            Cancel
           </button>
           <button
             onClick={handleDelete}
@@ -304,8 +301,8 @@ export function GameTab({ language, games, apiKeys, onUpdate }: GameTabProps) {
             className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
           >
             {isLoading 
-          ? (language === "en" ? "Deleting..." : "削除中...")
-          : (language === "en" ? "Delete" : "削除")}
+          ? "Deleting..."
+          : "Delete"}
           </button>
         </div>
           </div>

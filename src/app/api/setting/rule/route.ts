@@ -12,7 +12,7 @@ export async function GET(request: Request) {
         const error = err as Error;
         console.error("Rules fetch error:", error);
         return NextResponse.json(
-            { error: "ルール一覧の取得に失敗しました" },
+            { error: "Failed to retrieve rules list" },
             { status: 500 }
         );
     }
@@ -24,7 +24,6 @@ export async function POST(request: Request) {
 
         const { gameId, label, datastoreName, datastoreType, keyPattern, scope } = data;
 
-        // より詳細なバリデーション
         const validationErrors = [];
         if (!gameId) validationErrors.push("gameId");
         if (!label) validationErrors.push("label");
@@ -35,14 +34,13 @@ export async function POST(request: Request) {
         if (validationErrors.length > 0) {
             return NextResponse.json(
                 {
-                    error: "必須パラメータが不足しています",
+                    error: "Required parameters are missing",
                     missing: validationErrors
                 },
                 { status: 400 }
             );
         }
 
-        // scopeが空白またはundefinedの場合は"global"を使用
         const normalizedScope = !scope || scope.trim() === "" ? "global" : scope;
 
         const rule = await createRule({
@@ -51,14 +49,14 @@ export async function POST(request: Request) {
             datastoreName,
             datastoreType,
             keyPattern,
-            scope: normalizedScope // 正規化されたscopeを使用
+            scope: normalizedScope
         });
         return NextResponse.json(rule);
     } catch (err: unknown) {
         const error = err as Error;
         console.error("Rule creation error:", error);
         return NextResponse.json(
-            { error: "ルールの作成に失敗しました" },
+            { error: "Failed to create rule" },
             { status: 500 }
         );
     }
@@ -70,7 +68,7 @@ export async function DELETE(request: Request) {
 
         if (!data.id) {
             return NextResponse.json(
-                { error: "IDが指定されていません" },
+                { error: "ID is not specified" },
                 { status: 400 }
             );
         }
@@ -81,7 +79,7 @@ export async function DELETE(request: Request) {
         const error = err as Error;
         console.error("Rule deletion error:", error);
         return NextResponse.json(
-            { error: "ルールの削除に失敗しました" },
+            { error: "Failed to delete rule" },
             { status: 500 }
         );
     }
