@@ -3,99 +3,101 @@ import { createHmac } from "crypto";
 import { getGlobalSettings, getGames, getRules, createHistory, createErrorLog } from "@/lib/db";
 import axios, { AxiosError } from "axios";
 
-interface WebhookEmbed {
-  title: string;
-  description: string;
-  footer?: {
-    icon_url?: string;
-    text?: string;
-  };
-}
-
 interface WebhookPayload {
-  embeds: WebhookEmbed[];
+  NotificationId: string;
+  EventType: string;
+  EventTime: string;
+  EventPayload: {
+    UserId: number;
+    GameIds: number[];
+  };
 }
 
 export async function POST(request: Request) {
   try {
-    const payload = (await request.json()) as WebhookPayload;
-    console.log("Webhook POST received:", payload);
-
-    // Ensure embeds exists and is non-empty
-    if (!payload.embeds || !Array.isArray(payload.embeds) || payload.embeds.length === 0) {
-      return NextResponse.json({ error: "Invalid payload: embeds missing" }, { status: 400 });
+    console.log("===== WEBHOOK REQUEST HEADERS =====");
+    const headerObj: Record<string, string> = {};
+    request.headers.forEach((value, key) => {
+      headerObj[key] = value;
+    });
+    console.log(JSON.stringify(headerObj, null, 2));
+    
+    const requestClone = request.clone();
+    const rawBody = await requestClone.text();
+    console.log("===== WEBHOOK RAW BODY =====");
+    console.log(rawBody);
+    
+    let payload: WebhookPayload;
+    try {
+      payload = JSON.parse(rawBody) as WebhookPayload;
+    } catch (e) {
+      console.error("JSON解析エラー:", e);
+      return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
     }
-    const embed = payload.embeds[0];
-    if (!embed.footer || !embed.footer.text) {
-      return NextResponse.json({ error: "Invalid payload: footer data missing" }, { status: 400 });
+    
+    console.log("===== WEBHOOK PARSED PAYLOAD =====");
+    console.log(JSON.stringify(payload, null, 2));
+
+    if (payload.EventType !== 'RightToErasureRequest' || 
+        !payload.EventPayload || 
+        typeof payload.EventPayload.UserId !== 'number' ||
+        !Array.isArray(payload.EventPayload.GameIds)) {
+      console.log("非削除リクエストのWebhook:", payload);
+      return NextResponse.json({ success: false, error: "非削除リクエスト" }, { status: 400 });
     }
+    
+    const userId = payload.EventPayload.UserId.toString();
+    const gameIds = payload.EventPayload.GameIds.map(id => id.toString());
+    const gameIdForLog = gameIds[0] || "";
 
-    // Determine if this is a deletion request based on the description content.
-    // If it's not a deletion request, simply output to console and exit.
-    const description = embed.description || "";
-    const isDeleteRequest =
-      description.includes("User Id:") &&
-      description.includes("game(s) with Ids:");
-
-    if (!isDeleteRequest) {
-      console.log("Non-delete webhook received:", payload);
-      return NextResponse.json({ success: true });
-    }
-
-    // Extract gameId from description for logging (if available)
-    let gameIdForLog = "";
-    const gameIdMatchForLog = description.match(/game\(s\) with Ids: ([^\s]+)/);
-    if (gameIdMatchForLog) {
-      gameIdForLog = gameIdMatchForLog[1].split(',')[0].trim();
-    }
-
-    const footerText = embed.footer.text;
-    const signatureMatch = footerText.match(/Roblox-Signature: ([^,]+)/);
-    const timestampMatch = footerText.match(/Timestamp: (\d+)/);
-    const signature = signatureMatch ? signatureMatch[1] : null;
-    const timestamp = timestampMatch ? timestampMatch[1].trim() : null;
+    const signatureHeader = request.headers.get('roblox-signature') || null;
+    const timestamp = signatureHeader ? signatureHeader.split(',')[0].replace('t=', '') : null;
+    const signature = signatureHeader ? signatureHeader.split(',')[1].replace('v1=', '') : null;
 
     const settings = await getGlobalSettings();
     const webhookAuthKey = settings?.webhookAuthKey;
 
-    if (!webhookAuthKey && !signature) {
-      // No authentication configured and no signature provided; continue without auth
-    } else if (webhookAuthKey && signature) {
-      const hmac = createHmac('sha256', webhookAuthKey);
-      const calculatedSignature = hmac.update(`${timestamp}.${description}`).digest('base64');
+    try {
+      const logMessage = `
+===== WEBHOOK RECEIVED =====
+HEADERS:
+${JSON.stringify(headerObj, null, 2)}
 
+BODY:
+${rawBody}`;
+      
+      await createErrorLog(logMessage, gameIdForLog);
+    } catch (logError) {
+      console.error("Failed to log webhook details:", logError);
+    }
+
+    if (webhookAuthKey && signature && timestamp) {
+      const hmac = createHmac('sha256', webhookAuthKey);
+      const calculatedSignature = hmac.update(`${timestamp}.${rawBody}`).digest('base64');
+      
       if (calculatedSignature !== signature) {
+        console.error(`署名検証失敗: expected=${signature}, calculated=${calculatedSignature}`);
+        await createErrorLog(`署名検証失敗: ${signature} vs ${calculatedSignature}`, gameIdForLog);
         return NextResponse.json({ error: "署名が無効です" }, { status: 401 });
       }
-    } else {
-      return NextResponse.json({ error: "認証設定が不正です" }, { status: 401 });
     }
-
-    // For deletion requests, save the webhook notification to the error log.
-    try {
-      await createErrorLog("Webhook POST received: " + JSON.stringify(payload), gameIdForLog);
-    } catch (logError) {
-      console.error("Failed to log webhook POST:", logError);
-    }
-
-    const userIdMatch = description.match(/User Id: ([^in]+)/);
-    const gameIdMatch = description.match(/game\(s\) with Ids: ([^\s]+)/);
-
-    if (!userIdMatch || !gameIdMatch) {
-      console.log("Non-delete webhook received:", payload);
-      return NextResponse.json({ success: true });
-    }
-
-    const userId = userIdMatch[1].trim();
-    const gameIds = gameIdMatch[1].split(',').map(id => id.trim());
 
     const games = await getGames();
     for (const gameId of gameIds) {
       const game = games.find(g => g.startPlaceId.toString() === gameId);
-      if (!game) continue;
-
+      if (!game) {
+        console.log(`Game not found for startPlaceId: ${gameId}`);
+        await createErrorLog(`Game not found for startPlaceId: ${gameId}`, gameId);
+        continue;
+      }
+      
       const rules = await getRules(game.id);
-
+      if (rules.length === 0) {
+        console.log(`No rules found for game: ${game.label} (ID: ${game.id})`);
+        await createErrorLog(`No rules found for game: ${game.label} (ID: ${game.id})`, game.startPlaceId.toString());
+        continue;
+      }
+      
       for (const rule of rules) {
         try {
           const processedDatastoreName = rule.datastoreName
@@ -105,49 +107,81 @@ export async function POST(request: Request) {
           const processedKeyPattern = rule.keyPattern
             .replace("{userId}", userId)
             .replace("{playerId}", userId);
-          // デバッグ用のログ出力
+          
           console.log('Deleting data:', {
-          universeId: game.universeId,
-          datastoreName: processedDatastoreName,
-          scope: rule.scope || "global",
-          entryKey: processedKeyPattern
-          });
-        
-          await axios.delete(
-          `https://apis.roblox.com/datastores/v1/universes/${game.universeId}/standard-datastores/datastore/entries/entry`,
-          {
-            headers: {
-            "x-api-key": game.dataStoreApiKey.apiKey,
-            "Content-Type": "application/json"
-            },
-            params: {
+            universeId: game.universeId,
             datastoreName: processedDatastoreName,
             scope: rule.scope || "global",
             entryKey: processedKeyPattern
+          });
+        
+          try {
+            await axios.delete(
+              `https://apis.roblox.com/datastores/v1/universes/${game.universeId}/standard-datastores/datastore/entries/entry`,
+              {
+                headers: {
+                  "x-api-key": game.dataStoreApiKey.apiKey,
+                  "Content-Type": "application/json"
+                },
+                params: {
+                  datastoreName: processedDatastoreName,
+                  scope: rule.scope || "global",
+                  entryKey: processedKeyPattern
+                }
+              }
+            );
+            
+            console.log(`データ削除成功: ゲーム=${game.label}, データストア=${processedDatastoreName}, キー=${processedKeyPattern}`);
+            await createErrorLog(
+              `データ削除成功: ユーザーID=${userId}, ゲーム=${game.label}, データストア=${processedDatastoreName}, キー=${processedKeyPattern}`,
+              game.startPlaceId.toString()
+            );
+          } catch (deleteError) {
+            const axiosError = deleteError as AxiosError;
+            
+            if (axiosError.response?.status === 404) {
+              console.log(`データ既に削除済み/存在せず: ゲーム=${game.label}, データストア=${processedDatastoreName}, キー=${processedKeyPattern}`);
+              await createErrorLog(
+                `データ既に削除済み/存在せず: ユーザーID=${userId}, ゲーム=${game.label}, データストア=${processedDatastoreName}, キー=${processedKeyPattern}`,
+                game.startPlaceId.toString()
+              );
+            } else {
+              const errorMessage = `Delete operation failed for game ${game.label}: ${axiosError.message}`;
+              console.error(errorMessage);
+          
+              const errorDetails = {
+                status: axiosError.response?.status,
+                statusText: axiosError.response?.statusText,
+                data: axiosError.response?.data
+              };
+          
+              await createErrorLog(
+                `${errorMessage}\nDetails: ${JSON.stringify(errorDetails)}`,
+                game.startPlaceId.toString()
+              );
+              continue;
             }
           }
-          );
-        
-          await createHistory({
-            userId,
-            gameId: game.id,
-            ruleIds: [rule.id]
-          });
-        } catch (error) {
-          const axiosError = error as AxiosError;
-          const errorMessage = `Delete operation failed for game ${game.label}: ${axiosError.message}`;
-          console.error(errorMessage);
-
-          // エラーの詳細情報を作成
-          const errorDetails = {
-            status: axiosError.response?.status,
-            statusText: axiosError.response?.statusText,
-            data: axiosError.response?.data
-          };
-
+          
+          try {
+            await createHistory({
+              userId,
+              gameId: game.id,
+              ruleIds: [rule.id]
+            });
+            console.log(`履歴作成成功: ユーザー=${userId}, ゲーム=${game.label}`);
+          } catch (historyError) {
+            console.error(`履歴作成エラー:`, historyError);
+            await createErrorLog(
+              `履歴作成失敗: ${historyError instanceof Error ? historyError.message : '不明なエラー'}`,
+              game.startPlaceId.toString()
+            );
+          }
+        } catch (ruleProcessError) {
+          console.error(`ルール処理エラー:`, ruleProcessError);
           await createErrorLog(
-            `${errorMessage}\nDetails: ${JSON.stringify(errorDetails)}`,
-            game.universeId.toString()
+            `ルール処理エラー: ${ruleProcessError instanceof Error ? ruleProcessError.message : '不明なエラー'}`,
+            game.startPlaceId.toString()
           );
         }
       }
