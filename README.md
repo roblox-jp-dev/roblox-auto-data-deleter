@@ -1,4 +1,4 @@
-# Roblox Data Auto Deleter
+# Roblox Auto Data Deleter
 
 ## インストール手順
 
