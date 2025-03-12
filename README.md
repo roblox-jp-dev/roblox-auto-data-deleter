@@ -1,18 +1,22 @@
 # Roblox Auto Data Deleter
 
-## インストール手順
+## Japanese/日本語版
+日本語版は[こちらの記事](https://roblog.jp/studio/?p=4542)をご覧ください。
+For the Japanese version, please [click here.](https://roblog.jp/studio/?p=4542)
 
-### 前提条件
-- Node.js バージョン 22.8.0 以上
-   - **Windows**: [nodejs.org](https://nodejs.org/)からインストーラーをダウンロード
+## Installation Instructions
+
+### Prerequisites
+- Node.js version 22.8.0 or above
+   - **Windows**: Download the installer from [nodejs.org](https://nodejs.org/)
    - **Linux (Debian/Ubuntu)**: `sudo apt install nodejs npm`
-   - **Linux (CentOS/RHEL)**: `sudo yum install nodejs npm` または `sudo dnf install nodejs npm`
+   - **Linux (CentOS/RHEL)**: `sudo yum install nodejs npm` or `sudo dnf install nodejs npm`
    - **Linux (Arch)**: `sudo pacman -S nodejs npm`
-   - **macOS**: `brew install node` (Homebrewが必要)
+   - **macOS**: `brew install node` (Homebrew is required)
 
-### セットアップ方法
+### Setup Method
 
-1. **リポジトリのクローンとインストール**
+1. **Clone the Repository and Install**
 
    **Windows**:
    ```cmd
@@ -32,29 +36,29 @@
    npm run setup
    ```
 
-2. **環境変数の設定**  
-   `.env.local` ファイルを編集して以下の設定を行います：
+2. **Setting Environment Variables**  
+   Edit the `.env.local` file and configure the following settings:
 
-   | 変数名 | 説明 |
-   |--------|------|
-   | `AUTH_PASSWORD` | ログインパスワード（9文字以上で記号を含む必要あり。初期値: `1234`） |
-   | `AUTH_SECRET` | セッション暗号化用の秘密キー（公開しないでください） |
-   | `NEXTAUTH_URL` | アプリケーションのURL |
-   | `ALLOWED_IP` | 許可IPアドレスリスト（例: `127.0.0.1, 0.0.0.0`）※`0.0.0.0`を含めると全IP許可 |
-   | `MAX_LOGIN_ATTEMPTS` | ログイン失敗の最大回数（初期値: `5`） |
-   | `LOGIN_ATTEMPTS_TIMEOUT` | アカウントロック期間（分単位、初期値: `10`） |
+   | Variable Name         | Description |
+   |-----------------------|-------------|
+   | `AUTH_PASSWORD`       | Login password (must be at least 9 characters and include symbols. Default: `1234`) |
+   | `AUTH_SECRET`         | Secret key for session encryption (do not disclose) |
+   | `NEXTAUTH_URL`        | URL of the application |
+   | `ALLOWED_IP`          | List of allowed IP addresses (e.g., `127.0.0.1, 0.0.0.0`); including `0.0.0.0` permits all IP addresses |
+   | `MAX_LOGIN_ATTEMPTS`  | Maximum number of failed login attempts (Default: `5`) |
+   | `LOGIN_ATTEMPTS_TIMEOUT` | Account lock period (in minutes, Default: `10`) |
 
    **Windows**:
    ```cmd
    notepad .env.local
    ```
-   または Visual Studio Code、メモ帳などのエディタで開いて編集
+   Or open and edit with Visual Studio Code, Notepad, etc.
 
    **Linux (Debian/Ubuntu/CentOS/RHEL/Arch)**:
    ```bash
    nano .env.local
    ```
-   または
+   or
    ```bash
    vim .env.local
    ```
@@ -63,12 +67,12 @@
    ```bash
    nano .env.local
    ```
-   または
+   or
    ```bash
    vim .env.local
    ```
 
-3. **アプリケーション起動**
+3. **Starting the Application**
 
    **Windows**:
    ```cmd
@@ -80,16 +84,16 @@
    npm run start
    ```
 
-## デプロイと SSL 設定
+## Deployment and SSL Configuration
 
-### 方法1: リバースプロキシによる SSL 設定
+### Method 1: SSL Configuration Using Reverse Proxy
 
-#### Nginx の場合
+#### For Nginx
 
-1. **Nginxのインストール**
+1. **Installing Nginx**
 
    **Windows**:
-   Nginxの[公式サイト](https://nginx.org/en/download.html)からダウンロードしてインストール
+   Download and install from Nginx's [official website](https://nginx.org/en/download.html)
 
    **Linux (Debian/Ubuntu)**:
    ```bash
@@ -113,10 +117,10 @@
    brew install nginx
    ```
 
-2. **Nginxの設定**
+2. **Configuring Nginx**
 
    **Windows**:
-   `C:\nginx\conf\nginx.conf` または同様のパスにある設定ファイルを編集
+   Edit the configuration file at `C:\nginx\conf\nginx.conf` or a similar path
 
    **Linux (Debian/Ubuntu/CentOS/RHEL/Arch)**:
    ```bash
@@ -128,7 +132,7 @@
    nano /usr/local/etc/nginx/nginx.conf
    ```
 
-   設定例:
+   Example configuration:
    ```nginx
    server {
        listen 80;
@@ -143,10 +147,10 @@
    }
    ```
 
-3. **SSL証明書の設定 (Let's Encrypt)**
+3. **Configuring SSL Certificates (Let's Encrypt)**
 
    **Windows**:
-   [Win-ACME](https://www.win-acme.com/) などのツールを使用
+   Use tools like [Win-ACME](https://www.win-acme.com/)
 
    **Linux (Debian/Ubuntu)**:
    ```bash
@@ -173,12 +177,12 @@
    sudo certbot --nginx -d your-domain.com
    ```
 
-#### Apache の場合
+#### For Apache
 
-1. **Apacheのインストール**
+1. **Installing Apache**
 
    **Windows**:
-   [Apache Lounge](https://www.apachelounge.com/download/)からダウンロードしてインストール
+   Download and install from [Apache Lounge](https://www.apachelounge.com/download/)
 
    **Linux (Debian/Ubuntu)**:
    ```bash
@@ -201,10 +205,10 @@
    brew install httpd
    ```
 
-2. **Apacheの設定**
+2. **Configuring Apache**
 
    **Windows**:
-   `C:\Apache24\conf\httpd.conf` または同様のパスにある設定ファイルを編集
+   Edit the configuration file at `C:\Apache24\conf\httpd.conf` or a similar path
 
    **Linux (Debian/Ubuntu)**:
    ```bash
@@ -226,7 +230,7 @@
    nano /usr/local/etc/httpd/httpd.conf
    ```
 
-   設定例:
+   Example configuration:
    ```apache
    <VirtualHost *:80>
        ServerName your-domain.com
@@ -236,7 +240,7 @@
    </VirtualHost>
    ```
 
-3. **モジュール有効化 (Debian/Ubuntu)**:
+3. **Enabling Modules (Debian/Ubuntu)**:
    ```bash
    sudo a2enmod proxy proxy_http
    sudo a2ensite your-site.conf
@@ -244,16 +248,16 @@
    ```
 
    **CentOS/RHEL/Arch/macOS**:
-   モジュールを確認・有効化して再起動
+   Check and enable modules and restart:
    ```bash
    sudo systemctl restart httpd   # CentOS/RHEL/Arch
    brew services restart httpd    # macOS
    ```
 
-4. **SSL証明書の設定 (Let's Encrypt)**
+4. **Configuring SSL Certificates (Let's Encrypt)**
 
    **Windows**:
-   [Win-ACME](https://www.win-acme.com/) などのツールを使用
+   Use tools like [Win-ACME](https://www.win-acme.com/)
 
    **Linux (Debian/Ubuntu)**:
    ```bash
@@ -279,12 +283,12 @@
    sudo certbot --apache -d your-domain.com
    ```
 
-### 方法2: Cloudflare Tunnel の設定
+### Method 2: Setting Up Cloudflare Tunnel
 
-1. **Cloudflare CLI のインストール**
+1. **Installing Cloudflare CLI**
 
    **Windows**:
-   [Cloudflare公式サイト](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation)からダウンロード
+   Download from the [Cloudflare official website](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation)
 
    **Linux (Debian/Ubuntu)**:
    ```bash
@@ -302,7 +306,7 @@
    ```bash
    yay -S cloudflared
    ```
-   または
+   or
    ```bash
    sudo pacman -S cloudflared
    ```
@@ -312,22 +316,22 @@
    brew install cloudflare/cloudflare/cloudflared
    ```
 
-2. **Cloudflare への認証**
+2. **Authentication to Cloudflare**
 
-   **全OS共通**:
+   **All operating systems**:
    ```bash
    cloudflared tunnel login
    ```
 
-3. **トンネルの作成と設定**
+3. **Creating and Configuring the Tunnel**
 
-   **全OS共通**:
+   **All operating systems**:
    ```bash
    cloudflared tunnel create my-tunnel
    cloudflared tunnel route dns my-tunnel your-domain.com
    ```
 
-   設定ファイルの作成:
+   Creating the configuration file:
    ```bash
    mkdir -p ~/.cloudflared
    ```
@@ -350,7 +354,7 @@
    EOF
    ```
 
-4. **トンネル起動**
+4. **Starting the Tunnel**
 
    **Windows**:
    ```cmd
@@ -362,52 +366,52 @@
    cloudflared tunnel run my-tunnel
    ```
 
-## セキュリティ対策
+## Security Measures
 
-### 重要な推奨事項
+### Important Recommendations
 
-1. **HTTPS の強制使用**  
-   本番環境では必ず HTTPS を使用し、`NEXTAUTH_URL` を `https://` で始めるよう設定してください。
+1. **Enforcing HTTPS**  
+   In production, always use HTTPS and ensure that `NEXTAUTH_URL` begins with `https://`.
 
-2. **HSTS の設定**
+2. **Configuring HSTS**
 
-   **Nginx の場合:**
+   **For Nginx:**
    ```nginx
    add_header Strict-Transport-Security "max-age=15768000; includeSubDomains" always;
    ```
 
-   **Apache の場合:**
+   **For Apache:**
    ```apache
    Header always set Strict-Transport-Security "max-age=15768000; includeSubDomains"
    ```
 
-## 法的情報
+## Legal Information
 
-### ライセンス
+### License
 
-このプロジェクトは [MIT ライセンス](./LICENSE.md)の下で公開されています。
+This project is licensed under the [MIT License](./LICENSE.md).
 
-### 依存ライブラリ
+### Dependencies
 
-本プロジェクトは以下の主要な依存ライブラリを使用しています：
+This project uses the following main dependency libraries:
 
-| ライブラリ | ライセンス |
-|------------|------------|
-| @prisma/client | Apache-2.0 |
-| @radix-ui/react-select | MIT |
-| @radix-ui/react-tabs | MIT |
-| @tippyjs/react | MIT |
-| axios | MIT |
-| next | MIT |
-| react | MIT |
-| react-datepicker | MIT |
-| lucide-react | ISC |
+| Library                    | License  |
+|----------------------------|----------|
+| @prisma/client             | Apache-2.0 |
+| @radix-ui/react-select     | MIT      |
+| @radix-ui/react-tabs       | MIT      |
+| @tippyjs/react             | MIT      |
+| axios                      | MIT      |
+| next                       | MIT      |
+| react                      | MIT      |
+| react-datepicker           | MIT      |
+| lucide-react               | ISC      |
 
-すべての依存関係とそのライセンスの詳細については[NOTICE](./NOTICE.md)ファイルをご参照ください。
+For details on all dependencies and their licenses, please refer to the [NOTICE](./NOTICE.md) file.
 
-### 免責事項
+### Disclaimer
 
-本ソフトウェアは「現状のまま」提供され、明示または黙示を問わず、いかなる種類の保証も行いません。Roblox好きの集いおよびコントリビューターは、本ソフトウェアの使用によって生じるいかなる損害についても責任を負いません。
+This software is provided "as is", without any express or implied warranties. Roblox enthusiasts and contributors are not liable for any damages resulting from the use of this software.
 
 ---
 
