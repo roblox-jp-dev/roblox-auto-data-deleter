@@ -16,7 +16,7 @@
 
    **Windows**:
    ```cmd
-   git clone https://github.com/roblox-jp-dev/roblox-data-auto-deleter.git
+   git clone https://github.com/roblox-jp-dev/roblox-auto-data-deleter.git
    cd roblox-data-auto-deleter
    npm install
    npx auth secret
@@ -25,7 +25,7 @@
 
    **Linux (Debian/Ubuntu/CentOS/RHEL/Arch)/macOS**:
    ```bash
-   git clone https://github.com/roblox-jp-dev/roblox-data-auto-deleter.git
+   git clone https://github.com/roblox-jp-dev/roblox-auto-data-deleter.git
    cd roblox-data-auto-deleter
    npm install
    npx auth secret
